@@ -56,28 +56,66 @@ class Board():
     """
     Dictionary to keep track of the number of moves each piece can do.
     """
+    self.neighbors: dict[Bug, dict[Direction, Bug]] = {}
+    """
+    Dictionary to keep track of the neighbors of each piece.
+    """
     for color in PlayerColor:
       for expansion in self.type:
         if expansion is GameType.Base:
+
           self._bug_to_pos[Bug(color, BugType.QUEEN_BEE)] = None
           self.stats[Bug(color, BugType.QUEEN_BEE)] = 0
+
+          self.neighbors[Bug(color, BugType.QUEEN_BEE)] = {}
+          for d in Direction:
+            self.neighbors[Bug(color, BugType.QUEEN_BEE)][d] = None
+
           # Add ids greater than 0 only for bugs with multiple copies.
           for i in range(1, 3):
+
             self._bug_to_pos[Bug(color, BugType.SPIDER, i)] = None
             self._bug_to_pos[Bug(color, BugType.BEETLE, i)] = None
             self._bug_to_pos[Bug(color, BugType.GRASSHOPPER, i)] = None
             self._bug_to_pos[Bug(color, BugType.SOLDIER_ANT, i)] = None
+
             self.stats[Bug(color, BugType.SPIDER, i)] = 0
             self.stats[Bug(color, BugType.BEETLE, i)] = 0
             self.stats[Bug(color, BugType.GRASSHOPPER, i)] = 0
             self.stats[Bug(color, BugType.SOLDIER_ANT, i)] = 0
+
+            self.neighbors[Bug(color, BugType.SPIDER, i)] = {}
+            self.neighbors[Bug(color, BugType.BEETLE, i)] = {}
+            self.neighbors[Bug(color, BugType.GRASSHOPPER, i)] = {}
+            self.neighbors[Bug(color, BugType.SOLDIER_ANT, i)] = {}
+            for d in Direction:
+              self.neighbors[Bug(color, BugType.SPIDER, i)][d] = None
+              self.neighbors[Bug(color, BugType.BEETLE, i)][d] = None
+              self.neighbors[Bug(color, BugType.GRASSHOPPER, i)][d] = None
+              self.neighbors[Bug(color, BugType.SOLDIER_ANT, i)][d] = None
+  
           self._bug_to_pos[Bug(color, BugType.GRASSHOPPER, 3)] = None
           self._bug_to_pos[Bug(color, BugType.SOLDIER_ANT, 3)] = None
+          
           self.stats[Bug(color, BugType.GRASSHOPPER, 3)] = 0
           self.stats[Bug(color, BugType.SOLDIER_ANT, 3)] = 0
+
+          self.neighbors[Bug(color, BugType.GRASSHOPPER, 3)] = {}
+          self.neighbors[Bug(color, BugType.SOLDIER_ANT, 3)] = {}
+          for d in Direction:
+            self.neighbors[Bug(color, BugType.GRASSHOPPER, 3)][d] = None
+            self.neighbors[Bug(color, BugType.SOLDIER_ANT, 3)][d] = None
+
         else:
+
           self._bug_to_pos[Bug(color, BugType(expansion.name))] = None
           self.stats[Bug(color, BugType(expansion.name))] = 0
+
+          self.neighbors[Bug(color, BugType(expansion.name))] = {}
+          for d in Direction:
+            self.neighbors[Bug(color, BugType(expansion.name))][d] = None
+
+          
     self._play_initial_moves(moves)
 
   def __str__(self) -> str:
@@ -192,11 +230,10 @@ class Board():
       self._valid_moves_cache[color] = moves
     return self._valid_moves_cache[color] or set()
 
-
-
-  def update_stats(self):
+  def update_utility_dictionaries(self):
     """
     Updates the stats dictionary with the number of moves each piece can do.
+    Also updates the neighbors dictionary with the neighboring pieces for each piece.
     """
     for bug, pos in self._bug_to_pos.items():
       if pos:
@@ -217,6 +254,14 @@ class Board():
             self.stats[bug] = len(self._get_ladybug_moves(bug, pos))
           case BugType.PILLBUG:
             self.stats[bug] = len(self._get_sliding_moves(bug, pos, 1)) + len(self._get_pillbug_special_moves(pos))
+        
+        # Update neighbors dictionary
+        for direction in Direction:
+          neighbor_pos = self._get_neighbor(pos, direction)
+          if neighbor_bugs := self._bugs_from_pos(neighbor_pos):
+            self.neighbors[bug][direction] = neighbor_bugs[-1]
+          else:
+            self.neighbors[bug][direction] = None
 
   def play(self, move_string: str):
     """
@@ -244,7 +289,7 @@ class Board():
           self._pos_to_bug[move.destination] = [move.bug]
 
         # Update the stats dictionary with the number of moves each piece can do
-        self.update_stats()
+        self.update_utility_dictionaries()
 
         black_queen_surrounded = self.count_queen_neighbors(PlayerColor.BLACK) == 6
         white_queen_surrounded = self.count_queen_neighbors(PlayerColor.WHITE) == 6
@@ -328,7 +373,19 @@ class Board():
     Returns the stats dictionary as a dictionary of str keys and int values.
     """
     return {str(bug): value for bug, value in self.stats.items()}
+  
+  def get_neighbor_stats(self) -> dict[str, str]:
+    """
+    Returns the neighbors dictionary as a dictionary of str keys and str values.
+    """
+    return {str(bug): {str(direction): str(neighbor) for direction, neighbor in neighbors.items()} for bug, neighbors in self.neighbors.items()}
 
+  def get_board_bugs(self) -> list[str]:
+    """
+    Returns the board bugs as a list of str.
+    """
+    return [str(bug) for bug in self._bug_to_pos.keys()]
+  
   def _parse_turn(self, turn: str) -> int:
     """
     Parses a TurnString.
