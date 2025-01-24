@@ -53,8 +53,8 @@ def determine_result(engine: Engine) -> Optional[str]:
     return None
 
 def save_match_results(rows: List[List[Any]], match_id: int, result: str, file_path: str) -> None:
-    for row in rows:
-        if row[0] == match_id:
+    for i, row in enumerate(rows):
+        if i!= 0:
             row.append(result)
     with open(file_path, mode='w', newline='') as write_file:
         writer = csv.writer(write_file)
@@ -70,4 +70,4 @@ def match_generator(engine: Engine, arguments: List[str], num_matches: int) -> N
             print(f"Game over, match duration: {round(time() - match_id, 3)} seconds")
 
 if __name__ == "__main__":
-    match_generator(Engine(), ["Base"], 2)
+    match_generator(Engine(), ["Base"], 20)
