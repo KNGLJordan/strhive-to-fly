@@ -5,6 +5,10 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 from board import Board
 from enums import Direction
+import pickle
+import pandas as pd
+from ml_utils import df_preprocessing
+    
 
 type ABNode = tuple[Board, float, float, float, bool, Iterator[tuple[Board, str]], float, str]
 """
@@ -184,6 +188,9 @@ class AlphaBetaPrunerMLClassifier(Brain):
   """
   AI agent following an alpha-beta pruning policy.
   """
+  def __init__(self) -> None:
+    super().__init__()
+    self.model = pickle.load(open('model/model0.pkl', 'rb'))
 
   def calculate_best_move(self, board: Board, max_depth: int = 0, time_limit: int = 0) -> str:
     if not self._cache:
@@ -292,9 +299,7 @@ class AlphaBetaPrunerMLClassifier(Brain):
     :return: Node value.
     :rtype: float
     """
-    # importing the model 
-    import pickle
-    model = pickle.load(open('model.pkl', 'rb'))
+    
 
     # Structure of the data
     # 'number_of_turn','last_move_played_by','current_player_turn',
@@ -302,58 +307,39 @@ class AlphaBetaPrunerMLClassifier(Brain):
     # features relative to neighbors for every bug
 
     # Extracting the features
-    number_of_turn = 0.5 #standard assignment beacause number of turn is not available from the board
+    number_of_turn = 0.5 #standard assignment because number of turn is not available from the board
     last_move_played_by = node.current_player_color.opposite
     current_player_turn = node.current_player_color
     board_stats = deepcopy(node.get_stats())
     neighbor_stats = deepcopy(node.get_neighbor_stats())
-
+    
     x = [number_of_turn, last_move_played_by, current_player_turn] + list(board_stats.values())
     for bug in node.get_board_bugs():
+      for direction in Direction:
+        x.append(neighbor_stats[bug][str(direction)])
+
+    #Creating a DataFrame to store the extracted features
+    headers = ['number_of_turn', 'last_move_played_by', 'current_player_turn'] + [f'{key}_moves' for key in list(board_stats.keys())] 
+    for bug in node.get_board_bugs():
         for direction in Direction:
-            x.append(neighbor_stats[bug][str(direction)])
+            headers.append(f'{bug}_{direction.name}_neighbor')
 
-    pieces_dict = {
-      # None pieces
-      None: 0,
-      #white pieces
-      'wQ': 1,
-      'wA1': 2, 'wA2': 2, 'wA3': 2, 
-      'wG1': 3, 'wG2': 3, 'wG3': 3,
-      'wB1': 4, 'wB2': 4, 
-      'wS1': 5, 'wS2': 5,
-      'wM': 6,
-      'wL': 7,
-      'wP': 8,
-      #black pieces
-      'bQ': -1,
-      'bA1': -2, 'bA2': -2, 'bA3': -2,
-      'bG1': -3, 'bG2': -3, 'bG3': -3,
-      'bB1': -4, 'bB2': -4,
-      'bS1': -5, 'bS2': -5,
-      'bM': -6,
-      'bL': -7,
-      'bP': -8
-    }
+    X = pd.DataFrame(columns=headers)
 
-    color_player_dict = {
-        'White': 1,
-        'Black': -1
-    }
-        
-    # Replacing elements in the list with their corresponding values
+    # Adding the extracted features to the dataframe
+    X.loc[0] = x
 
-    # Replacing the color of the player
-    x[1] = color_player_dict[x[1]]
-    x[2] = color_player_dict[x[2]]
-
-    # Replacing the pieces
-    for i in range(3+len(list(board_stats.values())), len(x)):
-        x[i] = pieces_dict[x[i]]
+    X = df_preprocessing(X)
 
     # Predicting the best move
-    return model.predict([x])[0]
+    probabilities = self.model.predict_proba(X)[0]
+    prob_black_win = probabilities[0]
+    prob_white_win = probabilities[1]
 
+    if node.current_player_color == 'Black':
+      return prob_black_win
+    else:
+      return prob_white_win
 
   def gen_children(self, parent: Board) -> Set[tuple[Board, str]]:
     """

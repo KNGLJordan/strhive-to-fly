@@ -3,19 +3,16 @@ from copy import deepcopy
 from enums import Command, Option, OptionType, Strategy, PlayerColor, GameState
 from board import Board
 from game import Move
-from ai import Brain, Random, AlphaBetaPruner
+from ai import Brain, Random, AlphaBetaPruner, AlphaBetaPrunerMLClassifier
 import os
 import re
-import csv
-from random import randint, choice
-from time import time
 
 class Engine():
   """
   Game engine.
   """
 
-  VERSION: Final[str] = "1.2.0"
+  VERSION: Final[str] = "1.1.0"
   """
   Engine version.
   """
@@ -30,16 +27,17 @@ class Engine():
 
   BRAINS: Final[dict[Strategy, Brain]] = {
     Strategy.RANDOM: Random(),
-    Strategy.MINMAX: AlphaBetaPruner()
+    Strategy.MINMAX: AlphaBetaPruner(),
+    Strategy.MINMAX_ML: AlphaBetaPrunerMLClassifier()
   }
   """
   Map for strategies and the respective brain.
   """
-  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.MINMAX
+  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.RANDOM
   """
   Default value for option StrategyWhite.
   """
-  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.MINMAX
+  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.RANDOM
   """
   Default value for option StrategyBlack.
   """
@@ -111,7 +109,7 @@ class Engine():
     """
     Handles 'info' command.
     """
-    print(f"id HivemindEngine v{self.VERSION}")
+    print(f"id StrHiveToFlyEngine v{self.VERSION}")
     print("Mosquito;Ladybug;Pillbug")
 
   def help(self, arguments: list[str]) -> None:
@@ -292,6 +290,24 @@ class Engine():
   def play(self, move: str) -> None:
     """
     Handles 'play' command with its argument (MoveString).
+
+    :param move: MoveString.
+    :type move: str
+    """
+    if self.is_active(self.board):
+      try:
+        self.board.play(move)
+        self.brains[self.board.current_player_color].empty_cache()
+        print(self.board)
+      except ValueError as e:
+        self.error(e)
+
+  def play_match_generator(self, move: str) -> None:
+    """
+    Handles 'play' command with its argument (MoveString) but does not print the board.
+    !!! CREATED FOR MATCH GENERATOR !!!
+    Does not print the board to speed up the process
+    Print would be necessary for the GUI version of Mzinga
 
     :param move: MoveString.
     :type move: str

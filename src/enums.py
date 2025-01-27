@@ -105,6 +105,10 @@ class Strategy(StrEnum):
   """
   Minmax with alpha-beta pruning strategy.
   """
+  MINMAX_ML = "MinmaxML"
+  """
+  Minmax with alpha-beta pruning and machine learning strategy.
+  """
 
 class PlayerColor(StrEnum):
   """

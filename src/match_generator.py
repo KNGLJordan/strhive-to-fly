@@ -27,10 +27,15 @@ def play_match(engine: Engine, arguments: List[str]) -> List[List[Any]]:
     turn = 1
 
     while not engine.board.gameover:
-        valid_moves = engine.board.valid_moves.split(";")
-        move = valid_moves[randint(0, len(valid_moves) - 1)]
+        
+        # Select the move
+        move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, max_depth=3, time_limit=1)
+
         last_move_played_by = engine.board.current_player_color
-        engine.play(move)
+        
+        # Play the move
+        engine.play_match_generator(move)
+
         board_stats = deepcopy(engine.board.get_stats())
         neighbor_stats = deepcopy(engine.board.get_neighbor_stats())
 
@@ -61,13 +66,28 @@ def save_match_results(rows: List[List[Any]], match_id: int, result: str, file_p
         writer.writerows(rows)
 
 def match_generator(engine: Engine, arguments: List[str], num_matches: int) -> None:
+    white_wins = 0
+    black_wins = 0
+
+    # Create a folder to store the results (this folder is in the 'data' folder)
+    folder = 'testRandomVsRandom'
+    folder_path = os.path.join(os.path.dirname(__file__), '..', f'data/{folder}')
+    os.makedirs(folder_path, exist_ok=True)
+
     for _ in range(num_matches):
         rows, match_id = play_match(engine, arguments)
         result = determine_result(engine)
         if result:
-            file_path = os.path.join(os.path.dirname(__file__), '..', 'data', f'match_{match_id}_results.csv')
+            file_path = os.path.join(folder_path, f'match_{match_id}_results.csv')
             save_match_results(rows, match_id, result, file_path)
             print(f"Game over, match duration: {round(time() - match_id, 3)} seconds")
+            if result == 'White':
+                white_wins += 1
+            elif result == 'Black':
+                black_wins += 1
+
+    print(f"White wins: {white_wins}")
+    print(f"Black wins: {black_wins}")
 
 if __name__ == "__main__":
-    match_generator(Engine(), ["Base"], 20)
+    match_generator(Engine(), ["Base"], 100)
