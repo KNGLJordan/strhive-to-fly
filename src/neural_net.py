@@ -23,7 +23,7 @@ for filename in os.listdir(data_folder):
         df = pd.concat([df, df_match], ignore_index=True)
 
 # Separate features and labels
-data = df.drop('result', axis=1).values
+data = df.drop(columns=['number_of_turn', 'result']).values
 # Normalize and center the data
 scaler = StandardScaler()
 data = scaler.fit_transform(data)

@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+pd.set_option('future.no_silent_downcasting', True)
+
 pieces_dict = {
     #None values
     'None':0,
@@ -42,12 +44,12 @@ def df_preprocessing(df):
     cols = list(df.columns)
     neighbor_cols = [col for col in cols if 'neighbor' in col]
     for col in neighbor_cols:
-        df[col] = df[col].replace(pieces_dict)
+        df[col] = df[col].replace(pieces_dict).infer_objects(copy=False)
 
     # Encoding the player cols
     color_player_cols = ['last_move_played_by', 'current_player_turn', 'result']
     for col in color_player_cols:
         if col in df.columns:
-            df[col] = df[col].replace(color_player_dict)
+            df[col] = df[col].replace(color_player_dict).infer_objects(copy=False)
 
     return df

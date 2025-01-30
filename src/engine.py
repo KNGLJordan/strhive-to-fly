@@ -3,7 +3,7 @@ from copy import deepcopy
 from enums import Command, Option, OptionType, Strategy, PlayerColor, GameState
 from board import Board
 from game import Move
-from ai import Brain, Random, AlphaBetaPruner, AlphaBetaPrunerMLClassifier
+from ai import Brain, Random, AlphaBetaPruner, AlphaBetaPrunerMLClassifier, AlphaBetaPrunerNeuralNetwork
 import os
 import re
 
@@ -28,12 +28,13 @@ class Engine():
   BRAINS: Final[dict[Strategy, Brain]] = {
     Strategy.RANDOM: Random(),
     Strategy.MINMAX: AlphaBetaPruner(),
-    Strategy.MINMAX_ML: AlphaBetaPrunerMLClassifier()
+    Strategy.MINMAX_ML: AlphaBetaPrunerMLClassifier(),
+    Strategy.MINMAX_NN: AlphaBetaPrunerNeuralNetwork()
   }
   """
   Map for strategies and the respective brain.
   """
-  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.RANDOM
+  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.MINMAX_NN
   """
   Default value for option StrategyWhite.
   """
