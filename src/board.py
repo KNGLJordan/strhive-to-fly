@@ -2,6 +2,9 @@ from typing import Final, Optional, Set
 from enums import GameType, GameState, PlayerColor, BugType, Direction
 from game import Position, Bug, Move
 import re
+import numpy as np
+from copy import deepcopy
+from ml_utils import np_preprocessing
 
 class Board():
   """
@@ -749,3 +752,33 @@ class Board():
     :rtype: Position
     """
     return position + self.NEIGHBOR_DELTAS[direction.delta_index]
+  
+  def to_array(self) -> list:
+    """
+    Converts the board state to a array.
+    Structure of the array:
+      - last_move_played
+      - current_player_turn
+      - number of moves for each pieces
+      - neighbors for each pieces in each direction
+    """
+    last_move_played_by = self.current_player_color.opposite
+    current_player_turn = self.current_player_color
+    board_stats = deepcopy(self.get_stats())
+    neighbor_stats = deepcopy(self.get_neighbor_stats())
+    
+    x = [last_move_played_by, current_player_turn] + list(board_stats.values())
+    for bug in self.get_board_bugs():
+      for direction in Direction:
+        x.append(neighbor_stats[bug][str(direction)])
+        
+    return x
+
+
+
+  def to_np_array(self) -> np.array:
+    """
+    Converts the board state array to a numpy array, doing some preprocessing.
+    """
+    np_array = np_preprocessing(np.array(self.to_array()))
+    return np_array

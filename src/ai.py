@@ -10,6 +10,9 @@ import pandas as pd
 from ml_utils import df_preprocessing
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
+import torch
+import torch.nn.functional as F
+import numpy as np
     
 
 type ABNode = tuple[Board, float, float, float, bool, Iterator[tuple[Board, str]], float, str]
@@ -478,31 +481,34 @@ class AlphaBetaPrunerNeuralNetwork(Brain):
 
     # Extracting the features
     
-    last_move_played_by = node.current_player_color.opposite
-    current_player_turn = node.current_player_color
-    board_stats = deepcopy(node.get_stats())
-    neighbor_stats = deepcopy(node.get_neighbor_stats())
+    #---------------------------------------------------OLD CODE BEFORE Board.to_np_array()-------------------------------------------------------------
+    # last_move_played_by = node.current_player_color.opposite
+    # current_player_turn = node.current_player_color
+    # board_stats = deepcopy(node.get_stats())
+    # neighbor_stats = deepcopy(node.get_neighbor_stats())
     
-    x = [last_move_played_by, current_player_turn] + list(board_stats.values())
-    for bug in node.get_board_bugs():
-      for direction in Direction:
-        x.append(neighbor_stats[bug][str(direction)])
+    # x = [last_move_played_by, current_player_turn] + list(board_stats.values())
+    # for bug in node.get_board_bugs():
+    #   for direction in Direction:
+    #     x.append(neighbor_stats[bug][str(direction)])
 
-    #Creating a DataFrame to store the extracted features
-    headers = ['number_of_turn', 'last_move_played_by', 'current_player_turn'] + [f'{key}_moves' for key in list(board_stats.keys())] 
-    for bug in node.get_board_bugs():
-        for direction in Direction:
-            headers.append(f'{bug}_{direction.name}_neighbor')
+    # #Creating a DataFrame to store the extracted features
+    # headers = ['number_of_turn', 'last_move_played_by', 'current_player_turn'] + [f'{key}_moves' for key in list(board_stats.keys())] 
+    # for bug in node.get_board_bugs():
+    #     for direction in Direction:
+    #         headers.append(f'{bug}_{direction.name}_neighbor')
 
-    X = pd.DataFrame(columns=headers)
+    # X = pd.DataFrame(columns=headers)
 
-    # Adding the extracted features to the dataframe
-    X.loc[0] = x
+    # # Adding the extracted features to the dataframe
+    # X.loc[0] = x
 
-    X = df_preprocessing(X)
+    # X = df_preprocessing(X)
 
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
+    # scaler = StandardScaler()
+    # X = scaler.fit_transform(X)
+    #---------------------------------------------------------------------------------------------------------------------------------------
+    X = node.to_np_array()
 
     # Predicting the best move
     prob_white_win = self.model.predict(X)[0]
@@ -523,3 +529,41 @@ class AlphaBetaPrunerNeuralNetwork(Brain):
     :rtype: Set[tuple[Board, str]]
     """
     return {(deepcopy(parent).play(move), move) for move in parent.valid_moves.split(";") if not parent.gameover}
+
+class MCTSBrain(Brain):
+    """
+    MCTS-based AI agent that uses a neural network to evaluate the states.
+    """
+
+    def __init__(self, network) -> None:
+      super().__init__()
+      
+      self.network = network  # Neural network to evaluate states
+
+    def calculate_best_move(self, board: 'Board', max_depth: int = 0, time_limit: int = 0) -> str:
+      """
+      Uses MCTS to calculate the best move, evaluating each state with the neural network.
+      """
+      move_scores = self._mcts(board)
+      
+      # Select the move with the highest score
+      best_move = max(move_scores, key=move_scores.get)
+      
+      # Return the best move
+      return best_move
+
+    def _mcts(self, board: 'Board') -> dict:
+      """
+      Perform MCTS for the current board state.
+      Uses the neural network to evaluate the value of each potential move.
+      """
+      move_scores = {}
+      return move_scores
+
+    def predict_value(self, current_state: np.ndarray, future_state: np.ndarray) -> float:
+      """
+      This method predicts the value of a future state given the current state.
+      It uses the neural network to predict the value.
+      """
+      return 0.0
+

@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -53,3 +54,19 @@ def df_preprocessing(df):
             df[col] = df[col].replace(color_player_dict).infer_objects(copy=False)
 
     return df
+
+def np_preprocessing(np_array):
+
+    # Replace all NaN values with 0
+    np_array = np.nan_to_num(np_array)
+
+    # Encoding all the values using the dictionaries
+    np_array = np_array.astype(str)
+    np_array = np.vectorize(lambda x: pieces_dict.get(x, color_player_dict.get(x, x)))(np_array)
+    np_array = np_array.astype(float)
+
+    #standard scaling
+    scaler = MinMaxScaler()
+    np_array[:, 0] = scaler.fit_transform(np_array[:, 0].reshape(-1, 1)).reshape(-1)
+
+    return np_array
