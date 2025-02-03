@@ -1,10 +1,14 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from typing import Final, Optional, Set
 from enums import GameType, GameState, PlayerColor, BugType, Direction
 from game import Position, Bug, Move
 import re
 import numpy as np
 from copy import deepcopy
-from ml_utils import np_preprocessing
+from ml.ml_utils import np_preprocessing
 
 class Board():
   """

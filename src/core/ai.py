@@ -7,11 +7,9 @@ from board import Board
 from enums import Direction
 import pickle
 import pandas as pd
-from ml_utils import df_preprocessing
+from ml.ml_utils import df_preprocessing
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
-import torch
-import torch.nn.functional as F
 import numpy as np
     
 

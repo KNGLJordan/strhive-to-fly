@@ -1,5 +1,3 @@
-# strhive-to-fly/src CORE
-
 # Enums Module
 
 The `enums.py` module defines a set of enumerated types (enums) and flags used throughout the project. These enums standardize and document the various commands, options, strategies, player attributes, game states, game types, bug types, and directions used in the game engine. They also include helper methods and properties to facilitate parsing, validation, and transformation of values.

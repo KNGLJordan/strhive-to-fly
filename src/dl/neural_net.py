@@ -1,10 +1,13 @@
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.initializers import HeNormal
 from tensorflow.keras.optimizers import Adam
-from ml_utils import df_preprocessing
+from ml.ml_utils import df_preprocessing
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 

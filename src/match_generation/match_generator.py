@@ -1,11 +1,14 @@
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from typing import Any, List, Optional
 from copy import deepcopy
-from enums import Command, Option, OptionType, Strategy, GameType, PlayerColor, GameState, BugType, Direction
-from board import Board
-from game import Move, Bug
-from ai import Brain, Random, AlphaBetaPruner
-from engine import Engine
+from core.enums import Command, Option, OptionType, Strategy, GameType, PlayerColor, GameState, BugType, Direction
+from core.board import Board
+from core.game import Move, Bug
+from core.ai import Brain, Random, AlphaBetaPruner
+from core.engine import Engine
 import csv
 from random import randint
 from time import time
@@ -92,11 +95,12 @@ def match_generator(engine: Engine, arguments: List[str], num_matches: int) -> N
     black_wins = 0
 
     # Create a folder to store the results (this folder is in the 'data' folder)
-    folder = 'RandomVsRandom'
-    folder_path = os.path.join(os.path.dirname(__file__), '..', f'data/{folder}')
+    folder = 'newtest'
+    folder_path = os.path.join(os.path.dirname(__file__), '../..', f'data/{folder}')
     os.makedirs(folder_path, exist_ok=True)
 
-    for _ in range(num_matches):
+    k = 0
+    while k < num_matches:
         result_data = play_match(engine, arguments)
         if result_data is None:
             continue
@@ -110,9 +114,10 @@ def match_generator(engine: Engine, arguments: List[str], num_matches: int) -> N
                 white_wins += 1
             elif result == 'Black':
                 black_wins += 1
+        k += 1
 
     print(f"White wins: {white_wins}")
     print(f"Black wins: {black_wins}")
 
 if __name__ == "__main__":
-    match_generator(Engine(), ["Base"], 5000)
+    match_generator(Engine(), ["Base"], 10)
