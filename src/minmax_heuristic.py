@@ -9,7 +9,7 @@ class MinMax(Brain):
   """
   AI agent following an alpha-beta pruning policy.
   """
-  def __init__(self, weights: list[float] = [20, 0, 0, 0, 0, 0, 0, 0, 0, 0.5]) -> None:
+  def __init__(self, weights: list[float] = [1000, 1, 1, 1, 1, 1, 1, 1, 1, 1]) -> None:
     super().__init__()
 
     # Weights for the evaluation function
@@ -33,26 +33,28 @@ class MinMax(Brain):
     self.k_nm = weights[9]
 
   def calculate_best_move(self, board: Board, max_depth: int = 3, time_limit: int = 0) -> str:
-    best_score, best_move = self.negamax(board, float('-inf'), float('inf'), max_depth)
+    best_score, best_move = self.negamax(board, board.current_player_color, float('-inf'), float('inf'), max_depth)
+    with open("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/log.txt", "a") as log:
+        log.write(f"'best score: ', {best_score} for move: {best_move}\n")
+        log.close()
     return best_move 
 
-  def negamax(self, board: Board, alpha: float, beta: float, max_depth: int = 0, time_limit: int = 0) -> tuple[float, str]:
+  def negamax(self, board: Board, player_color: PlayerColor, alpha: float, beta: float, max_depth: int = 0) -> tuple[float, str]:
     """
     Negamax algorithm with alpha-beta pruning to search for the best move, given the depth and time constraints.
     TIME LIMIT NOT IMPLEMENTED
     SORTING NOT IMPLEMENTED
     TRANSPOSITION TABLE NOT IMPLEMENTED
     """
-    start_time = time()
 
     if board.gameover:
         if board.state == GameState.WHITE_WINS:
-            if board.current_player_color == PlayerColor.BLACK:
+            if player_color == PlayerColor.BLACK:
                 return float('-inf'), ""
             else:
                 return float('inf'), ""
         elif board.state == GameState.BLACK_WINS:
-            if board.current_player_color == PlayerColor.WHITE:
+            if player_color == PlayerColor.WHITE:
                 return float('-inf'), ""
             else:
                 return float('inf'), ""
@@ -60,7 +62,8 @@ class MinMax(Brain):
             return 0, ""
       
     if max_depth == 0:
-        return self.evaluate(board), ""
+        #print('+ ', board.current_player_color.opposite, '- ', board.current_player_color)
+        return self.evaluate(board, player_color), ""
 
     value = float('-inf')
     best_move = ""
@@ -69,8 +72,12 @@ class MinMax(Brain):
     moves = board.valid_moves.split(";")
     boards = [deepcopy(board).play(move) for move in moves]
 
+    # Ordinamento delle mosse in base ad una euristica
+    #boards = sorted(boards, key=lambda x: self.evaluate(x, player_color), reverse=True)
+    #print(f'sorted boards (max: {player_color}): ', [self.evaluate(x, player_color) for x in boards])
+
     for move, b in zip(moves, boards):
-        score, _ = self.negamax(b, -beta, -alpha, max_depth - 1, time_limit)
+        score, _ = self.negamax(b, player_color.opposite, -beta, -alpha, max_depth - 1)
         score = -score  # Inversione del valore per negamax
 
         if score > value:
@@ -83,7 +90,7 @@ class MinMax(Brain):
 
     return value, best_move
 
-  def evaluate(self, node: Board) -> float:
+  def evaluate(self, node: Board, player_color: PlayerColor) -> float:
     """
     Evaluates the given node.  
     Currently, it's a very naive implementation that weights the winning state (how many pieces surround the enemy queen minus how many pieces surround yours) and the mobility state (amount of your available moves minus the enemy's).
@@ -93,8 +100,8 @@ class MinMax(Brain):
     :return: Node value.
     :rtype: float
     """
-    minimizing_color = node.current_player_color
-    maximizing_color = minimizing_color.opposite
+    maximizing_color = player_color
+    minimizing_color = player_color.opposite
 
     dict_moves_per_bug_type = node.get_number_moves_per_bugtype()
     present_bugtypes = dict_moves_per_bug_type.keys()
@@ -102,7 +109,9 @@ class MinMax(Brain):
     evaluation = 0
 
     # Queen neighbors
-    evaluation += (node.count_queen_neighbors(maximizing_color) - node.count_queen_neighbors(minimizing_color)) * self.k_qn
+    min_neighbors = node.count_queen_neighbors(minimizing_color)
+    max_neighbors = node.count_queen_neighbors(maximizing_color)
+    evaluation += (min_neighbors-max_neighbors) * self.k_qn
 
     # Mobility
     if maximizing_color == PlayerColor.WHITE:
@@ -131,6 +140,6 @@ class MinMax(Brain):
         evaluation += (dict_moves_per_bug_type['bP'] - dict_moves_per_bug_type['wP']) * self.k_mp
     
     # Valid moves for player - Valid moves for opponent
-    evaluation += (len(node.calculate_valid_moves_for_player(maximizing_color, True)) - len(node.calculate_valid_moves_for_player(minimizing_color))) * self.k_nm
+    evaluation += (len(node.calculate_valid_moves_for_player(maximizing_color, True)) - len(node.calculate_valid_moves_for_player(minimizing_color, True))) * self.k_nm
 
     return evaluation

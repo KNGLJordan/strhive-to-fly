@@ -29,8 +29,8 @@ def play_match(engine: Engine, arguments: List[str]) -> Optional[List[List[Any]]
     turn = 1
 
     while not engine.board.gameover:
-        print(turn)
-        if turn > 100:
+        turn_start_time = time()
+        if turn > 500:
             print(f"Match discarded due to excessive turns: {turn}")
             return None
         
@@ -38,8 +38,7 @@ def play_match(engine: Engine, arguments: List[str]) -> Optional[List[List[Any]]
         
         # # Select the move using the brain --------------------------------------------------------------------------------
         if last_move_played_by == PlayerColor.WHITE:
-            move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, max_depth=3)
-            print('move selected: ', move)
+            move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, max_depth=1)
             engine.play_match_generator(move)
         # ----------------------------------------------------------------------------------------------------------------
         else:
@@ -64,7 +63,9 @@ def play_match(engine: Engine, arguments: List[str]) -> Optional[List[List[Any]]
                 else:
                     break
         # ----------------------------------------------------------------------------------------------------------------
-            
+             
+        turn_duration = time() - turn_start_time
+        print(f"Turn {turn} duration: {round(turn_duration, 3)} seconds")
 
         board_stats = deepcopy(engine.board.get_stats())
         neighbor_stats = deepcopy(engine.board.get_neighbor_stats())

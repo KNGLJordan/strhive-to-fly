@@ -1,0 +1,27 @@
+
+-------------------------GAME with timestamp 1739904993.2093155-----------------------
+'best score: ', 6 for move: wS1
+'best score: ', 16 for move: wS2 -wS1
+'best score: ', 1016 for move: wG1 -wS2
+'best score: ', 1004 for move: wQ wS2/
+'best score: ', 1984 for move: wG2 /wG1
+'best score: ', 1951 for move: wA1 /wG2
+'best score: ', inf for move: wA2 \wQ
+
+-------------------------GAME with timestamp 1739905471.0502322-----------------------
+'best score: ', 6 for move: wG1
+'best score: ', 16 for move: wA1 \wG1
+'best score: ', 1041 for move: wA2 /wG1
+'best score: ', 1051 for move: wQ /wA2
+'best score: ', 3051 for move: wA1 bQ-
+'best score: ', 3053 for move: wA3 \wG1
+'best score: ', inf for move: wA3 bS1-
+'best score: ', 1049 for move: wQ /wA2
+'best score: ', 3049 for move: wA1 bQ-
+'best score: ', 2056 for move: wB1 -wG1
+'best score: ', 1077 for move: wS1 \wB1
+'best score: ', 2092 for move: wG2 \wS1
+'best score: ', 2071 for move: wA3 wG2/
+'best score: ', 3054 for move: wA3 /wA1
+'best score: ', 4077 for move: wB2 wG2/
+'best score: ', inf for move: wA2 bB2-

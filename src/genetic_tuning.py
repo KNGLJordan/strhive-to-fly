@@ -8,7 +8,8 @@ from copy import deepcopy
 
 from engine import Engine
 from enums import PlayerColor, GameState
-from ai import MinMax
+from minmax_heuristic import MinMax
+import time
 
 
 class GameAgent:
@@ -27,9 +28,11 @@ def play_match(agent1, agent2) -> str:
     turn = 1
 
     while not engine.board.gameover:
-        print('turn:', turn)
+        start_time = time.time()
         move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, max_depth=3)
         engine.play_match_generator(move)
+        end_time = time.time()
+        print(f'Turn: {turn}, Time: {end_time - start_time:.2f} seconds')
         turn += 1
         if turn > 300:
             print("Draw")
@@ -177,12 +180,12 @@ class GeneticTuner:
 
 
 if __name__ == '__main__':
-    POPULATION_SIZE = 50
-    NUM_GENERATIONS = 100
+    POPULATION_SIZE = 10
+    NUM_GENERATIONS = 10
     MUTATION_RATE = 0.1
     CROSSOVER_RATE = 0.7
-    MOVEMENT_WEIGHT_BOUNDS = (0.0, 5.0)
-    QUEEN_NEIGH_WEIGHT_BOUNDS = (0.0, 100.0)
+    MOVEMENT_WEIGHT_BOUNDS = (0.0, 1.0)
+    QUEEN_NEIGH_WEIGHT_BOUNDS = (100.0, 200.0)
     NUM_WEIGHTS = 10
     NUM_OPPONENTS = 3
 

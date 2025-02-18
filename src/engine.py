@@ -12,6 +12,7 @@ from typing import TypeGuard, Final, Optional, Any
 from copy import deepcopy
 import os
 import re
+import time
 
 class Engine():
   """
@@ -42,7 +43,7 @@ class Engine():
   """
   Default value for option StrategyWhite.
   """
-  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.MINMAX
+  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.RANDOM
   """
   Default value for option StrategyBlack.
   """
@@ -265,6 +266,10 @@ class Engine():
     try:
       self.board = Board(" ".join(arguments))
       print(self.board)
+      # Writing in the log file
+      with open("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/log.txt", "a") as log:
+        log.write(f"\n-------------------------GAME with timestamp {time.time()}-----------------------\n")
+        log.close()
     except (ValueError, TypeError) as e:
       self.error(e)
 
