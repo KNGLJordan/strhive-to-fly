@@ -1,10 +1,11 @@
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# import os
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from typing import Final, Optional, Set
 from enums import GameType, GameState, PlayerColor, BugType, Direction
 from game import Position, Bug, Move
+
+from typing import Final, Optional, Set
 import re
 import numpy as np
 from copy import deepcopy
@@ -380,6 +381,21 @@ class Board():
     Returns the stats dictionary as a dictionary of str keys and int values.
     """
     return {str(bug): value for bug, value in self.stats.items()}
+  
+  def get_number_moves_per_bugtype(self) -> dict[str, int]:
+    """
+    Returns the number of moves per bug type as a dictionary of str keys and int values.
+    """
+    dict_moves_per_bug = self.get_stats()
+    dict_moves_per_bug_type = {}
+    for key in dict_moves_per_bug:
+      #if key of length 3 cut the last character
+      if len(key) == 3:
+        truncated_key = key[:-1]
+      else:
+        truncated_key = key
+      dict_moves_per_bug_type[truncated_key] = dict_moves_per_bug_type.get(truncated_key, 0) + dict_moves_per_bug[key]
+    return dict_moves_per_bug_type
   
   def get_neighbor_stats(self) -> dict[str, str]:
     """

@@ -1,14 +1,12 @@
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import os
 from typing import Any, List, Optional
 from copy import deepcopy
-from core.enums import Command, Option, OptionType, Strategy, GameType, PlayerColor, GameState, BugType, Direction
-from core.board import Board
-from core.game import Move, Bug
-from core.ai import Brain, Random, AlphaBetaPruner
-from core.engine import Engine
+from enums import PlayerColor, GameState, Direction
+from board import Board
+from engine import Engine
 import csv
 from random import randint
 from time import time
@@ -31,34 +29,41 @@ def play_match(engine: Engine, arguments: List[str]) -> Optional[List[List[Any]]
     turn = 1
 
     while not engine.board.gameover:
+        print(turn)
         if turn > 100:
             print(f"Match discarded due to excessive turns: {turn}")
             return None
         
-        # # Select the move
-        # move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, time_limit=5)
-
-        # Random move
-        # Generating the list of all valid moves
-        valid_moves = engine.board.valid_moves.split(";")
         last_move_played_by = engine.board.current_player_color
-
-        # Loop to avoid playing a move that ends the game againts the player that played it
-        while True:
-            # Selecting a random move
-            index = randint(0, len(valid_moves) - 1)
-            move = valid_moves[index]
-
-            # Play the move
+        
+        # # Select the move using the brain --------------------------------------------------------------------------------
+        if last_move_played_by == PlayerColor.WHITE:
+            move = engine.brains[engine.board.current_player_color].calculate_best_move(engine.board, max_depth=3)
+            print('move selected: ', move)
             engine.play_match_generator(move)
+        # ----------------------------------------------------------------------------------------------------------------
+        else:
+        # Random move (avoiding suicide) --------------------------------------------------------------------------------
+            # Generating the list of all valid moves
+            valid_moves = engine.board.valid_moves.split(";")
 
-            # Check if the game is over and the player who lost is the same that played the move
-            if engine.board.state == GameState.WHITE_WINS and last_move_played_by == PlayerColor.BLACK:
-                engine.undo(['1'])
-            elif engine.board.state == GameState.BLACK_WINS and last_move_played_by == PlayerColor.WHITE:
-                engine.undo(['1'])
-            else:
-                break
+            # Loop to avoid playing a move that ends the game againts the player that played it
+            while True:
+                # Selecting a random move
+                index = randint(0, len(valid_moves) - 1)
+                move = valid_moves[index]
+
+                # Play the move
+                engine.play_match_generator(move)
+
+                # Check if the game is over and the player who lost is the same that played the move
+                if engine.board.state == GameState.WHITE_WINS and last_move_played_by == PlayerColor.BLACK:
+                    engine.undo(['1'])
+                elif engine.board.state == GameState.BLACK_WINS and last_move_played_by == PlayerColor.WHITE:
+                    engine.undo(['1'])
+                else:
+                    break
+        # ----------------------------------------------------------------------------------------------------------------
             
 
         board_stats = deepcopy(engine.board.get_stats())
@@ -95,8 +100,8 @@ def match_generator(engine: Engine, arguments: List[str], num_matches: int) -> N
     black_wins = 0
 
     # Create a folder to store the results (this folder is in the 'data' folder)
-    folder = 'newtest'
-    folder_path = os.path.join(os.path.dirname(__file__), '../..', f'data/{folder}')
+    folder = 'testMinMax'
+    folder_path = os.path.join(os.path.dirname(__file__), '..', f'data/{folder}')
     os.makedirs(folder_path, exist_ok=True)
 
     k = 0

@@ -1,9 +1,15 @@
-from typing import TypeGuard, Final, Optional, Any
-from copy import deepcopy
+# import os
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from enums import Command, Option, OptionType, Strategy, PlayerColor, GameState
 from board import Board
 from game import Move
-from ai import Brain, Random, AlphaBetaPruner, AlphaBetaPrunerMLClassifier, AlphaBetaPrunerNeuralNetwork
+from ai import Brain, Random
+from minmax_heuristic import MinMax
+
+from typing import TypeGuard, Final, Optional, Any
+from copy import deepcopy
 import os
 import re
 
@@ -27,18 +33,16 @@ class Engine():
 
   BRAINS: Final[dict[Strategy, Brain]] = {
     Strategy.RANDOM: Random(),
-    Strategy.MINMAX: AlphaBetaPruner(),
-    Strategy.MINMAX_ML: AlphaBetaPrunerMLClassifier(),
-    Strategy.MINMAX_NN: AlphaBetaPrunerNeuralNetwork()
+    Strategy.MINMAX: MinMax(),
   }
   """
   Map for strategies and the respective brain.
   """
-  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.MINMAX_NN
+  DEFAULT_STRATEGY_WHITE: Final[Strategy] = Strategy.MINMAX
   """
   Default value for option StrategyWhite.
   """
-  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.RANDOM
+  DEFAULT_STRATEGY_BLACK: Final[Strategy] = Strategy.MINMAX
   """
   Default value for option StrategyBlack.
   """
