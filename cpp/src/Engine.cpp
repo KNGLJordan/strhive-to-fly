@@ -67,7 +67,7 @@ void Engine::ReadLine(std::string line)
     }
     else if (command == CommandString_BestMove)
     {
-        BestMove();
+        BestMove(args);
     }
     else if (command == CommandString_Play)
     {
@@ -213,8 +213,12 @@ void Engine::ValidMoves()
     WriteLine(OkString);
 }
 
-void Engine::BestMove()
+void Engine::BestMove(std::string args)
 {
+    // can be received an input as
+    //  bestmove depth 2
+    //  bestmove time 00:00:05
+
     if (!m_board)
     {
         WriteError(ErrorMessage_NoGameInProgress);
@@ -245,8 +249,32 @@ void Engine::BestMove()
     //---------------------------------------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------MINMAX MOVE SELECTION-------------------------------------------------------
+    std::istringstream ss(args);
+    std::string keyword;
+    ss >> keyword; // Legge il primo token (depth o time)
+
     MinMax minmax = MinMax({1000, 1, 1, 1, 1, 1, 1, 1, 1, 1});
-    std::string bestMoveStr = minmax.calculateBestMove(*m_board, 0, 5);
+    std::string bestMoveStr;
+
+    if (keyword == "depth") {
+        int depth;
+        if (ss >> depth) { // Converte il valore in intero
+            bestMoveStr = minmax.calculateBestMove(*m_board, depth, 0);
+        }
+    } 
+    else if (keyword == "time") {
+        std::string timeStr;
+        ss >> timeStr; // Legge l'orario in formato "00:00:05"
+
+        int h, m, s;
+        char colon1, colon2;
+        std::istringstream timeSS(timeStr);
+        
+        if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
+            int totalSeconds = h * 3600 + m * 60 + s;
+            bestMoveStr = minmax.calculateBestMove(*m_board, 0, totalSeconds);
+        }
+    }
 
     WriteLine(bestMoveStr);
     WriteLine(OkString);

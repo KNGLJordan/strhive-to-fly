@@ -35,7 +35,7 @@ class Engine
     void Info();
     void NewGame(std::string args);
     void ValidMoves();
-    void BestMove();
+    void BestMove(std::string args);
     void Play(std::string args);
     void Pass();
     void Undo(std::string args);
