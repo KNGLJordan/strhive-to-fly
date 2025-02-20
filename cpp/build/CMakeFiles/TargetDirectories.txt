@@ -1,0 +1,3 @@
+/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles/mzingacpp.dir
+/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles/edit_cache.dir
+/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles/rebuild_cache.dir

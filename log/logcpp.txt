@@ -1,0 +1,731 @@
+best score: 0 for move: 
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3and time 0
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3 and time 0
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 2 and time 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Calculating best move with depth 2 and time 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> -1000
+Calculating best move with depth 2 and time 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> 1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 1000
+Evaluation -> 0
+Evaluation -> 1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Calculating best move with depth 2 and time 0
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -1000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+Evaluation -> -2000
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 2 and time 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+Evaluation -> 0
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 2 and time 0
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Calculating best move with depth 2 and time 0
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -1030
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -30
+Evaluation -> -1030
+Evaluation -> -30
+Evaluation -> -1030
+Calculating best move with depth 2 and time 0
+Evaluation -> -50
+Evaluation -> -1050
+Evaluation -> -1050
+Evaluation -> -1050
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -1050
+Evaluation -> 956
+Evaluation -> -44
+Evaluation -> -44
+Evaluation -> -44
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> 956
+Evaluation -> -44
+Evaluation -> 956
+Evaluation -> -44
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+Evaluation -> -50
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3 and time 0
+best score: -30 for move: wA1
+Calculating best move with depth 3 and time 0
+best score: 44 for move: bA1 wA1-
+Calculating best move with depth 3 and time 0
+best score: -50 for move: wA2 \wA1
+Calculating best move with depth 3 and time 0
+best score: 1086 for move: bQ bA1/
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3 and time 0
+best score: 44 for move: bA1 wS1-
+Calculating best move with depth 3 and time 0
+best score: 44 for move: bA2 bA1-
+Calculating best move with depth 3 and time 0
+best score: 54 for move: bA3 bA2/
+Calculating best move with depth 3 and time 0
+best score: 64 for move: bQ -bA3
+Calculating best move with depth 3 and time 0
+best score: 58 for move: bG1 \bQ
+Calculating best move with depth 3 and time 0
+best score: 1054 for move: bS1 bA3-
+Calculating best move with depth 3 and time 0
+best score: 58 for move: bA2 \bA3
+Calculating best move with depth 3 and time 0
+best score: -904 for move: bA2 \wA1
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3 and time 0
+best score: 44 for move: bA1 wS1-
+Calculating best move with depth 3 and time 0
+best score: 44 for move: bA2 bA1-
+Calculating best move with depth 3 and time 0
+best score: 54 for move: bA3 bA2/
+Calculating best move with depth 3 and time 0
+best score: 64 for move: bQ -bA3
+Calculating best move with depth 3 and time 0
+best score: 72 for move: bG1 \bQ
+Calculating best move with depth 3 and time 0
+best score: -938 for move: bA2 -wB1
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 1 and time 0
+best score: 30 for move: bA1 wS1-
+Calculating best move with depth 1 and time 0
+best score: 1050 for move: bQ bA1-
+Calculating best move with depth 1 and time 0
+best score: 60 for move: bA2 bQ-
+Calculating best move with depth 1 and time 0
+best score: 72 for move: bA3 \bQ
+Calculating best move with depth 1 and time 0
+best score: 86 for move: bS1 \bA2
+Calculating best move with depth 1 and time 0
+best score: 82 for move: bG1 bQ\
+Calculating best move with depth 1 and time 0
+best score: 66 for move: bA3 bA1\
+Calculating best move with depth 1 and time 0
+best score: 118 for move: bG2 bA2-
+Calculating best move with depth 1 and time 0
+best score: 120 for move: bG3 bG1\
+Calculating best move with depth 1 and time 0
+best score: 1130 for move: bS2 bS1/
+Calculating best move with depth 1 and time 0
+best score: 1122 for move: bB1 \bS2
+Calculating best move with depth 1 and time 0
+best score: 1138 for move: bB2 bG2-
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 1 and time 0
+best score: -30 for move: bA1 wS1-
+Calculating best move with depth 1 and time 0
+best score: 956 for move: bA2 bA1-
+Calculating best move with depth 1 and time 0
+best score: 1940 for move: bA3 \bA2
+Calculating best move with depth 1 and time 0
+best score: 1942 for move: bQ \bA3
+Calculating best move with depth 1 and time 0
+best score: 2958 for move: bA2 /wQ
+Calculating best move with depth 1 and time 0
+best score: 2952 for move: bS1 -bA2
+Calculating best move with depth 1 and time 0
+best score: 3958 for move: bA3 /wB2
+Calculating best move with depth 1 and time 0
+best score: inf for move: bA1 wQ\
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 3 and time 0
+best score: -0 for move: bS1 wS1- in 0.0486406 seconds
+Calculating best move with depth 3 and time 0
+best score: -0 for move: bA1 bS1- in 0.0611784 seconds
+Calculating best move with depth 3 and time 0
+best score: 996 for move: bG1 bS1\ in 0.143975 seconds
+Calculating best move with depth 3 and time 0
+best score: 998 for move: bQ bG1\ in 0.257668 seconds
+Calculating best move with depth 3 and time 0
+best score: 1958 for move: bA1 bS1/ in 3.18699 seconds
+Calculating best move with depth 3 and time 0
+best score: 996 for move: bA2 bQ/ in 3.20916 seconds
+Calculating best move with depth 3 and time 0
+best score: -6 for move: bS2 bA1/ in 4.84169 seconds
+Calculating best move with depth 3 and time 0
+best score: -48 for move: bG2 -bS2 in 3.278 seconds
+Calculating best move with depth 3 and time 0
+best score: -60 for move: bS2 \wG1 in 3.50626 seconds
+Calculating best move with depth 3 and time 0
+best score: -60 for move: bB1 bA1\ in 3.96158 seconds
+Calculating best move with depth 3 and time 0
+best score: -116 for move: bG3 bS2/ in 8.41953 seconds
+Calculating best move with depth 3 and time 0
+best score: -64 for move: bA2 -wA1 in 19.4552 seconds
+Calculating best move with depth 3 and time 0
+best score: 946 for move: bA3 \bA2 in 9.69142 seconds
+Calculating best move with depth 3 and time 0
+best score: 942 for move: bA3 /wG1 in 17.6031 seconds
+Calculating best move with depth 3 and time 0
+best score: 996 for move: bA2 wA1\ in 43.3684 seconds
+Calculating best move with depth 3 and time 0
+best score: 932 for move: bA2 bG2/ in 37.759 seconds
+Calculating best move with depth 3 and time 0
+best score: inf for move: bA3 /wA1 in 18.3346 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bS1 wS1- in 0.0745484 seconds
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bA1 bS1- in 0.0445605 seconds
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bA2 bS1\ in 0.0462332 seconds
+Calculating best move with depth 1 and time 0
+best score: 1988 for move: bQ bA1/ in 0.00185736 seconds
+Calculating best move with depth 1 and time 0
+best score: 3986 for move: bA3 /bA2 in 0.139532 seconds
+Calculating best move with depth 1 and time 0
+best score: inf for move: bB1 /bA3 in 0.106792 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bS1 wB1- in 0.0726585 seconds
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bA1 bS1- in 0.0431439 seconds
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bA2 bS1\ in 0.0625194 seconds
+Calculating best move with depth 1 and time 0
+best score: 1988 for move: bQ bA1/ in 0.00517064 seconds
+Calculating best move with depth 1 and time 0
+best score: 3986 for move: bS2 /bA2 in 0.0970136 seconds
+Calculating best move with depth 1 and time 0
+best score: 3982 for move: bA3 /bS2 in 0.0223476 seconds
+Calculating best move with depth 1 and time 0
+best score: inf for move: bG1 \bQ in 0.0870161 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move with depth 1 and time 0
+best score: -0 for move: bS1 wS1- in 0.0977606 seconds
+Calculating best move with depth 1 and time 0
+best score: 1000 for move: bQ bS1\ in 0.0641775 seconds
+Calculating best move with depth 1 and time 0
+best score: 8 for move: bA1 bQ/ in 0.0244759 seconds
+Calculating best move with depth 1 and time 0
+best score: 18 for move: bS2 /bQ in 0.118446 seconds
+Calculating best move with depth 1 and time 0
+best score: 24 for move: bA2 bA1\ in 0.0779184 seconds
+Calculating best move with depth 1 and time 0
+best score: 54 for move: bG1 bQ\ in 0.0959264 seconds
+Calculating best move with depth 1 and time 0
+best score: 56 for move: bB1 /bS2 in 0.175702 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move for player 1 with depth 1 and time 0
+best score: -0 for move: bS1 wS1- in 0.0765896 seconds
+Calculating best move for player 1 with depth 1 and time 0
+best score: 1000 for move: bQ bS1\ in 0.0485848 seconds
+Calculating best move for player 1 with depth 1 and time 0
+best score: 3000 for move: bA1 bQ- in 0.053026 seconds
+Calculating best move for player 1 with depth 1 and time 0
+best score: 16 for move: bB1 \bA1 in 0.117139 seconds
+Calculating best move for player 1 with depth 1 and time 0
+best score: 26 for move: bB2 /bQ in 0.0869575 seconds
+Calculating best move for player 1 with depth 1 and time 0
+best score: 28 for move: bS2 bA1\ in 0.110186 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move for player -1 with depth 1 and time 0
+best score: -0 for move: bS1 wS1- in 0.108216 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 996 for move: bA1 bS1- in 0.055564 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1992 for move: bA2 bS1\ in 0.054947 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1984 for move: bQ bA1/ in 0.00358492 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3978 for move: bS2 /bA2 in 0.138784 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3944 for move: bB1 -bQ in 0.0241655 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bB1 bS1 in 0.127407 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bB1 \bS1 in 0.098383 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bA1 bA2- in 0.0920603 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move for player -1 with depth 1 and time 0
+best score: -30 for move: bA1 wB1- in 0.0703139 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: -50 for move: bA2 bA1- in 0.0554609 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: -14 for move: bA3 \bA2 in 0.0470796 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1940 for move: bQ \bA3 in 0.00182973 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3954 for move: bA2 /wS1 in 0.0667075 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3950 for move: bB1 -bA2 in 0.0612101 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3940 for move: bG1 bA3\ in 0.0194451 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3956 for move: bG2 \bB1 in 0.0984721 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3914 for move: bG1 /bG2 in 0.0930054 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3956 for move: bG2 wA1\ in 0.0560501 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3912 for move: bS1 \bB1 in 0.0837917 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3912 for move: bS1 \wS2 in 0.0644809 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3912 for move: bG1 bA3\ in 0.0722334 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3976 for move: bA3 wA2\ in 0.204096 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3980 for move: bA1 wQ\ in 0.168836 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3968 for move: bB2 bG1- in 0.237221 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3988 for move: bA1 bA2\ in 0.226612 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bA3 wQ\ in 0.15727 seconds
+----------------- NEW GAME with timestamp -----------------
+Calculating best move for player -1 with depth 1 and time 0
+best score: -30 for move: bS1 wS1- in 0.161529 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: -50 for move: bA1 bS1- in 0.0377867 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: -14 for move: bA2 bS1\ in 0.0702407 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1936 for move: bQ bA2\ in 0.018088 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3912 for move: bA1 wS1\ in 0.205012 seconds
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bS2 bQ- in 0.15596 seconds
+----------------- NEW GAME with timestamp -----------------
+Sorted moves: bG1 -wS1, bB1 wS1-, bB1 wS1\, bB1 wS1/, bB1 /wS1, bB1 \wS1, bS1 \wS1, bS1 /wS1, bS1 wS1/, bS1 wS1\, bB1 -wS1, bS1 wS1-, bS1 -wS1, bG1 /wS1, bG1 \wS1, bG1 wS1\, bG1 wS1/, bG1 wS1-, bA1 -wS1, bA1 /wS1, bA1 \wS1, bA1 wS1\, bA1 wS1/, bA1 wS1-, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -30 for move: bG1 -wS1 in 0.0762147 seconds
+Sorted moves: bG2 \bG1, bG2 /bG1, bB1 /bG1, bB1 \bG1, bB1 -bG1, bS1 \bG1, bS1 /bG1, bS1 -bG1, bG2 -bG1, bA1 -bG1, bA1 /bG1, bA1 \bG1, bQ \bG1, bQ /bG1, bQ -bG1, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -50 for move: bG2 \bG1 in 0.0779631 seconds
+Sorted moves: bB1 bG2/, bS1 bG2/, bG3 bG2/, bA1 bG2/, bS1 /bG1, bB1 \bG2, bB1 /bG2, bS1 /bG2, bS1 \bG2, bS1 -bG2, bB1 -bG2, bB1 /bG1, bG3 -bG2, bA1 \bG2, bA1 /bG2, bG3 \bG2, bG3 /bG2, bG3 /bG1, bA1 -bG2, bA1 /bG1, bQ bG2/, bQ /bG1, bQ \bG2, bQ -bG2, bQ /bG2, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -12 for move: bB1 bG2/ in 0.0909504 seconds
+Sorted moves: bQ /bG1, bQ -bG2, bQ bB1/, bQ \bB1, bQ /bG2, bQ -bB1, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1912 for move: bQ /bG1 in 0.00659591 seconds
+Sorted moves: bB1 -wB1, bG3 -bB1, bB2 -bB1, bS1 -bB1, bA1 -bB1, bG3 \bB1, bG3 bB1/, bA1 \bB1, bG3 -bG2, bA1 -bG2, bB2 \bB1, bB2 bB1/, bB2 -bG2, bS1 -bG2, bS1 bB1/, bS1 \bB1, bA1 bB1/, bB1 bG2, bB1 \bG2, bG3 bQ\, bB2 bQ\, bQ /bG2, bS1 bQ\, bA1 bQ\, bG3 /bG2, bA1 /bG2, bB2 /bG2, bS1 /bG2, bA1 /bQ, bG3 -bQ, bG3 /bQ, bB2 -bQ, bB2 /bQ, bS1 -bQ, bS1 /bQ, bA1 -bQ, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 2910 for move: bB1 -wB1 in 0.19659 seconds
+Sorted moves: bG2 wS2-, bB1 \wB1, bB1 wB1, bB1 bG2/, bG3 \bB1, bB2 \bB1, bS1 \bB1, bA1 \bB1, bA1 -bG2, bG3 \bG2, bG3 -bG2, bA1 \bG2, bB2 \bG2, bB1 bG2, bB1 bG1, bS1 -bG2, bS1 \bG2, bB2 -bG2, bB1 wS1, bG2 bG1\, bQ /bG2, bB2 bQ\, bS1 bQ\, bG3 bQ\, bA1 bQ\, bB2 /bG2, bS1 /bG2, bG3 /bG2, bA1 /bG2, bG3 /bQ, bG3 -bQ, bA1 -bQ, bB2 /bQ, bB2 -bQ, bS1 -bQ, bS1 /bQ, bA1 /bQ, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3892 for move: bG2 wS2- in 0.198406 seconds
+Sorted moves: bB1 wB1, bB1 \wB1, bB2 bG2\, bS1 bG2\, bG3 bG2\, bA1 bG2\, bG3 -bB1, bB2 -bB1, bS1 -bB1, bA1 -bB1, bG3 \bB1, bB2 \bB1, bB2 bG2-, bB2 bG2/, bA1 \bB1, bB1 bG1, bS1 bG2-, bS1 bG2/, bG3 bG2-, bS1 \bB1, bG3 bG2/, bB1 wS1, bA1 bG2-, bA1 bG2/, bB1 \bG1, bQ -bG1, bG2 -bB1, bB2 -bG1, bS1 -bG1, bG3 -bG1, bA1 -bG1, bA1 -bQ, bG3 /bQ, bB2 /bQ, bB2 -bQ, bS1 -bQ, bS1 /bQ, bG3 -bQ, bA1 /bQ, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3936 for move: bB1 wB1 in 0.176192 seconds
+Sorted moves: bG3 \bG1, bG3 bG2-, bB2 \bG1, bB2 bG2-, bB2 bG2/, bG3 \bB1, bB2 bG2\, bG3 bG2/, bG3 bG2\, bS1 bG2-, bB2 \bB1, bS1 bG2/, bS1 bG2\, bS1 \bB1, bS1 \bG1, bB1 \wB1, bA1 bG2\, bA1 bG2-, bA1 bG2/, bA1 \bG1, bA1 \bB1, bQ -bG1, bB1 wQ, bB1 \wS2, bB1 wS2, bG2 -bB1, bB1 -wB1, bB1 wS1, bB2 -bG1, bS1 -bG1, bG3 -bG1, bA1 -bG1, bG3 /bQ, bB2 /bQ, bB2 -bQ, bS1 -bQ, bS1 /bQ, bG3 -bQ, bA1 /bQ, bA1 -bQ, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 2926 for move: bG3 \bG1 in 0.268743 seconds
+Sorted moves: bB2 bG2\, bS1 bG2\, bA1 bG2\, bS1 bG3/, bA1 bG3/, bB2 bG3/, bB2 \bB1, bS1 \bB1, bB1 \wB1, bA1 \bB1, bB2 bG2-, bB2 \bG3, bB2 bG2/, bB2 -bG3, bS1 bG2-, bS1 -bG3, bS1 \bG3, bS1 bG2/, bA1 -bG3, bA1 \bG3, bA1 bG2-, bA1 bG2/, bB1 \wS2, bG2 -bB1, bB1 wS2, bB1 -wB1, bB1 wS1, bB1 wQ, bG3 bG1\, bB2 /bG3, bS1 /bG3, bA1 /bG3, bB2 /bQ, bB2 -bQ, bS1 -bQ, bS1 /bQ, bA1 -bQ, bA1 /bQ, bQ /bG3, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 3934 for move: bB2 bG2\ in 0.20715 seconds
+Sorted moves: bB2 wS2\, bA1 bG3/, bB1 \wB1, bS1 bG3/, bS1 \bB1, bA1 \bB1, bB2 bG2, bA1 bB2/, bS1 bB2/, bA1 bB2-, bA1 \bG3, bA1 -bG3, bB1 -wG1, bS1 -bG3, bS1 \bG3, bS1 bB2-, bS1 bB2\, bA1 bB2\, bB2 bG2-, bB1 -wB1, bB1 wS2, bB1 wS1, bB1 wQ, bG3 bG1\, bQ /bG3, bS1 bQ\, bA1 bQ\, bS1 /bG3, bA1 /bG3, bA1 -bQ, bS1 -bQ, bS1 /bQ, bA1 /bQ, bQ bG1\, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bB2 wS2\ in 0.130211 seconds
+----------------- NEW GAME with timestamp -----------------
+Sorted moves: -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, -48, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -48 for move: bM wG1- in 0.291454 seconds
+Sorted moves: -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -1080, -1080, -1080, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -80 for move: bA1 bM\ in 0.11398 seconds
+Sorted moves: -12, -12, -12, -12, -12, -12, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -14, -1012, -1014, -1014, -1014, -2014, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: -12 for move: bP /bA1 in 0.174134 seconds
+Sorted moves: 1904, 1904, 1904, 1904, 904, 904, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 1904 for move: bQ bP\ in 0.0109339 seconds
+Sorted moves: 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 2882, 1886, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, 1882, -1130, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: 2882 for move: bA2 bA1- in 0.232053 seconds
+Sorted moves: 5000, 3922, 3922, 3922, 3922, 3912, 3906, 3880, 3880, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3878, 3870, 2880, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 2878, 1878, -134, 
+Calculating best move for player -1 with depth 1 and time 0
+best score: inf for move: bA2 /wB1 in 0.572774 seconds
+reached 1 2 3 4
+reached 1 2 3 4
+reached 1 2 3 4
+reached 1 2 3
+reached 1 2
+reached 1 2
+reached 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+reached 5
+reached 5
+reached 5
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 4
+reached 3
+reached 4
+reached 4
+reached 3
+reached 3
+reached 3
+reached 3
+reached 3
+reached 3
+reached 3
