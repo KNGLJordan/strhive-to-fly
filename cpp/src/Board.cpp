@@ -1051,3 +1051,17 @@ void Board::ResetCaches()
     m_cachedValidPlacementsReady = false;
     m_cachedValidPlacements.clear();
 }
+
+std::vector<std::pair<PieceName, Position>> MzingaCpp::Board::GetPiecesAndPositions() 
+{
+    std::vector<std::pair<PieceName, Position>> piecesInPlay;
+    
+    for (int i = 0; i < (int)PieceName::NumPieceNames; i++) {
+        PieceName piece = static_cast<PieceName>(i);
+        if (PieceInPlay(piece)) {  
+            piecesInPlay.emplace_back(piece, m_piecePositions[i]);
+        }
+    }
+    
+    return piecesInPlay;
+}

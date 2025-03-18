@@ -40,6 +40,8 @@ class Board
     
     int CountNeighbors(PieceName const &pieceName); // originally was private
 
+    std::vector<std::pair<PieceName, Position>> GetPiecesAndPositions(); // uses the private function m_piecePositions
+
   private:
     void GetValidMoves(PieceName const &pieceName, std::shared_ptr<MoveSet> moveSet);
     void CalculateValidPlacements();

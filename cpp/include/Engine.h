@@ -10,6 +10,7 @@
 #include <string>
 
 #include "Board.h"
+#include "MinMaxZobrist.h"
 
 namespace MzingaCpp
 {
@@ -28,6 +29,8 @@ class Engine
     }
 
   private:
+    MinMaxZobrist minmaxZobrist; // Oggetto MinMaxZobrist persistente per il calcolo della mossa migliore
+
     void WriteLine(std::string line);
     void WriteError(std::string message);
     void WriteError();
