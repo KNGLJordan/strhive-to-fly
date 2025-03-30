@@ -201,5 +201,5 @@ if __name__ == '__main__':
     best_weights = tuner.evolve()
     print("Migliori pesi trovati:", best_weights)
     #saving the best weights found in a file in folder 'data/genetic_tuning/'
-    with open(os.path.join(os.path.dirname(__file__), '../..', 'data/genetic_tuning/best_weights.txt'), 'w') as f:
+    with open(os.path.join(os.path.dirname(__file__), '../', 'data/genetic_weights/genetic_weights.txt'), 'a') as f:
         f.write(" ".join(map(str, best_weights)))
