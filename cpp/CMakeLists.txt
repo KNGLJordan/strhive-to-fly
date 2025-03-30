@@ -14,8 +14,10 @@ target_sources(mzingacpp PRIVATE
     src/Engine.cpp
     src/Enums.cpp
     src/MinMax.cpp
+    src/MinMaxZobrist.cpp
     src/Move.cpp
     src/Position.cpp
+    src/ZobristHasher.cpp
 )
 
 set_property(TARGET mzingacpp PROPERTY CXX_STANDARD 17)
