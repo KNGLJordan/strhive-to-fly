@@ -11,6 +11,7 @@
 
 #include "Board.h"
 #include "MinMaxZobrist.h"
+#include "Engine.h"
 
 namespace MzingaCpp
 {

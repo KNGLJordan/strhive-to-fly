@@ -48,7 +48,7 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
 
     if(timeLimit==0)
     {
-        std::tie(bestScore, bestMove) = negamax(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp);
+        std::tie(bestScore, bestMove) = negamaxUndo(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp);
     }
     else
     {
@@ -67,7 +67,7 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
         while (!timeUp) {
             float score;
             std::string move;
-            std::tie(score, move) = negamax(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), depth, timeUp);
+            std::tie(score, move) = negamaxUndo(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), depth, timeUp);
             
             if (!move.empty()) {
                 bestScore = score;
@@ -88,6 +88,132 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
 }
 
 float k_qn, k_mq, k_ms, k_mb, k_ma, k_mg, k_mm, k_ml, k_mp, k_nm;
+
+std::pair<float, std::string> MinMax::negamaxUndo(
+    Board& board,
+    int playerColor,
+    float alpha,
+    float beta,
+    int maxDepth,
+    std::atomic<bool>& timeUp)
+{
+    // 1) Se il timer è scaduto, interrompo subito
+    if (timeUp.load()) {
+        return {0.0f, ""};
+    }
+
+    // 2) Controllo se sono in nodo terminale (vittoria/pareggio)
+    BoardState state = board.GetBoardState();
+    if (state == BoardState::WhiteWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 0)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::BlackWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 1)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::Draw) {
+        return {0.0f, ""};
+    }
+
+    // 3) Se ho raggiunto la profondità massima, valuto staticamente
+    if (maxDepth == 0) {
+        float leafEval = evaluate(board, playerColor);
+        return { leafEval, "" };
+    }
+
+    // 4) Genero la lista delle mosse valide e ne faccio una valutazione "statica" per l'ordinamento.
+    //    Memorizzo in una sola struct: (Move, moveString, staticScore)
+    struct MoveEntry {
+        Move        m;
+        std::string str;
+        float       score;
+    };
+    std::vector<MoveEntry> movelist;
+
+    // Suppongo che GetValidMoves() torni un puntatore/opzionale a std::vector<Move>
+    auto validMovesPtr = board.GetValidMoves();
+    if (!validMovesPtr || validMovesPtr->empty()) {
+        // Se non ci sono mosse valide, è come se fossimo in un nodo terminale di stallo/draw
+        return {0.0f, ""};
+    }
+
+    movelist.reserve(validMovesPtr->size());
+    for (const auto& move : *validMovesPtr) {
+        std::string moveStr;
+        if (!board.TryGetMoveString(move, moveStr)) {
+            continue;
+        }
+
+        // Provo ad applicare la mossa
+        if (board.TryPlayMove(move, moveStr)) {
+            // Calcolo la valutazione statica subito dopo aver giocato
+            float staticScore = evaluate(board, playerColor);
+            // Undo per tornare allo stato precedente
+            board.TryUndoLastMove();
+
+            // Memorizzo Move, la sua stringa e il punteggio per l'ordinamento
+            movelist.push_back({ move, moveStr, staticScore });
+        }
+    }
+
+    // Se dopo il filtro non ci sono mosse (es. nessuna era legale), trattalo come draw:
+    if (movelist.empty()) {
+        return {0.0f, ""};
+    }
+
+    // 5) Ordino movelist dal punteggio statico più alto al più basso
+    std::sort(
+        movelist.begin(), movelist.end(),
+        [](MoveEntry const& a, MoveEntry const& b) {
+            return a.score > b.score;
+        }
+    );
+
+    // 6) Negamax ricorsivo con alpha-beta
+    float bestValue = -std::numeric_limits<float>::infinity();
+    std::string bestMove = "";
+
+    for (auto& entry : movelist) {
+        if (timeUp.load()) {
+            break;
+        }
+
+        // Applico direttamente la mossa "entry.m" usando la stringa pre-memorizzata "entry.str"
+        if (!board.TryPlayMove(entry.m, entry.str)) {
+            // Se per qualche motivo TryPlayMove fallisce, skippo
+            continue;
+        }
+
+        // Chiamata ricorsiva: cambio segno, scambio alpha/beta, profondità-1
+        auto [childScore, _childMove] =
+            negamaxUndo(board, -playerColor, -beta, -alpha, maxDepth - 1, timeUp);
+        float score = -childScore;
+
+        // Torno indietro al nodo padre
+        board.TryUndoLastMove();
+
+        // Aggiorno bestValue e bestMove
+        if (score > bestValue) {
+            bestValue = score;
+            bestMove  = entry.str;
+        }
+
+        // Alpha-beta pruning
+        alpha = std::max(alpha, bestValue);
+        if (alpha >= beta) {
+            break;
+        }
+    }
+
+    return { bestValue, bestMove };
+}
+
+
 
 std::pair<float, std::string> MinMax::negamax(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp) {
     if (timeUp) return {0, ""};

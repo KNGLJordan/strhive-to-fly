@@ -139,10 +139,24 @@ CMakeFiles/mzingacpp.dir/src/MinMax.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mzingacpp.dir/src/MinMax.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/MinMax.cpp -o CMakeFiles/mzingacpp.dir/src/MinMax.cpp.s
 
+CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o: CMakeFiles/mzingacpp.dir/flags.make
+CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o: /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/MinMaxZobrist.cpp
+CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o: CMakeFiles/mzingacpp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o -MF CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o.d -o CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o -c /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/MinMaxZobrist.cpp
+
+CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/MinMaxZobrist.cpp > CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.i
+
+CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/MinMaxZobrist.cpp -o CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.s
+
 CMakeFiles/mzingacpp.dir/src/Move.cpp.o: CMakeFiles/mzingacpp.dir/flags.make
 CMakeFiles/mzingacpp.dir/src/Move.cpp.o: /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/Move.cpp
 CMakeFiles/mzingacpp.dir/src/Move.cpp.o: CMakeFiles/mzingacpp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/mzingacpp.dir/src/Move.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/mzingacpp.dir/src/Move.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/mzingacpp.dir/src/Move.cpp.o -MF CMakeFiles/mzingacpp.dir/src/Move.cpp.o.d -o CMakeFiles/mzingacpp.dir/src/Move.cpp.o -c /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/Move.cpp
 
 CMakeFiles/mzingacpp.dir/src/Move.cpp.i: cmake_force
@@ -156,7 +170,7 @@ CMakeFiles/mzingacpp.dir/src/Move.cpp.s: cmake_force
 CMakeFiles/mzingacpp.dir/src/Position.cpp.o: CMakeFiles/mzingacpp.dir/flags.make
 CMakeFiles/mzingacpp.dir/src/Position.cpp.o: /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/Position.cpp
 CMakeFiles/mzingacpp.dir/src/Position.cpp.o: CMakeFiles/mzingacpp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/mzingacpp.dir/src/Position.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/mzingacpp.dir/src/Position.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/mzingacpp.dir/src/Position.cpp.o -MF CMakeFiles/mzingacpp.dir/src/Position.cpp.o.d -o CMakeFiles/mzingacpp.dir/src/Position.cpp.o -c /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/Position.cpp
 
 CMakeFiles/mzingacpp.dir/src/Position.cpp.i: cmake_force
@@ -167,6 +181,20 @@ CMakeFiles/mzingacpp.dir/src/Position.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mzingacpp.dir/src/Position.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/Position.cpp -o CMakeFiles/mzingacpp.dir/src/Position.cpp.s
 
+CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o: CMakeFiles/mzingacpp.dir/flags.make
+CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o: /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/ZobristHasher.cpp
+CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o: CMakeFiles/mzingacpp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o -MF CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o.d -o CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o -c /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/ZobristHasher.cpp
+
+CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/ZobristHasher.cpp > CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.i
+
+CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/src/ZobristHasher.cpp -o CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.s
+
 # Object files for target mzingacpp
 mzingacpp_OBJECTS = \
 "CMakeFiles/mzingacpp.dir/src/main.cpp.o" \
@@ -174,8 +202,10 @@ mzingacpp_OBJECTS = \
 "CMakeFiles/mzingacpp.dir/src/Engine.cpp.o" \
 "CMakeFiles/mzingacpp.dir/src/Enums.cpp.o" \
 "CMakeFiles/mzingacpp.dir/src/MinMax.cpp.o" \
+"CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o" \
 "CMakeFiles/mzingacpp.dir/src/Move.cpp.o" \
-"CMakeFiles/mzingacpp.dir/src/Position.cpp.o"
+"CMakeFiles/mzingacpp.dir/src/Position.cpp.o" \
+"CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o"
 
 # External object files for target mzingacpp
 mzingacpp_EXTERNAL_OBJECTS =
@@ -185,11 +215,13 @@ Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/Board.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/Engine.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/Enums.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/MinMax.cpp.o
+Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/Move.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/Position.cpp.o
+Release/mzingacpp: CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/build.make
 Release/mzingacpp: CMakeFiles/mzingacpp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable Release/mzingacpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable Release/mzingacpp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mzingacpp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

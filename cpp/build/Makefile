@@ -225,6 +225,30 @@ src/MinMax.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/MinMax.cpp.s
 .PHONY : src/MinMax.cpp.s
 
+src/MinMaxZobrist.o: src/MinMaxZobrist.cpp.o
+.PHONY : src/MinMaxZobrist.o
+
+# target to build an object file
+src/MinMaxZobrist.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.o
+.PHONY : src/MinMaxZobrist.cpp.o
+
+src/MinMaxZobrist.i: src/MinMaxZobrist.cpp.i
+.PHONY : src/MinMaxZobrist.i
+
+# target to preprocess a source file
+src/MinMaxZobrist.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.i
+.PHONY : src/MinMaxZobrist.cpp.i
+
+src/MinMaxZobrist.s: src/MinMaxZobrist.cpp.s
+.PHONY : src/MinMaxZobrist.s
+
+# target to generate assembly for a file
+src/MinMaxZobrist.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/MinMaxZobrist.cpp.s
+.PHONY : src/MinMaxZobrist.cpp.s
+
 src/Move.o: src/Move.cpp.o
 .PHONY : src/Move.o
 
@@ -273,6 +297,30 @@ src/Position.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/Position.cpp.s
 .PHONY : src/Position.cpp.s
 
+src/ZobristHasher.o: src/ZobristHasher.cpp.o
+.PHONY : src/ZobristHasher.o
+
+# target to build an object file
+src/ZobristHasher.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.o
+.PHONY : src/ZobristHasher.cpp.o
+
+src/ZobristHasher.i: src/ZobristHasher.cpp.i
+.PHONY : src/ZobristHasher.i
+
+# target to preprocess a source file
+src/ZobristHasher.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.i
+.PHONY : src/ZobristHasher.cpp.i
+
+src/ZobristHasher.s: src/ZobristHasher.cpp.s
+.PHONY : src/ZobristHasher.s
+
+# target to generate assembly for a file
+src/ZobristHasher.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mzingacpp.dir/build.make CMakeFiles/mzingacpp.dir/src/ZobristHasher.cpp.s
+.PHONY : src/ZobristHasher.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -318,12 +366,18 @@ help:
 	@echo "... src/MinMax.o"
 	@echo "... src/MinMax.i"
 	@echo "... src/MinMax.s"
+	@echo "... src/MinMaxZobrist.o"
+	@echo "... src/MinMaxZobrist.i"
+	@echo "... src/MinMaxZobrist.s"
 	@echo "... src/Move.o"
 	@echo "... src/Move.i"
 	@echo "... src/Move.s"
 	@echo "... src/Position.o"
 	@echo "... src/Position.i"
 	@echo "... src/Position.s"
+	@echo "... src/ZobristHasher.o"
+	@echo "... src/ZobristHasher.i"
+	@echo "... src/ZobristHasher.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
