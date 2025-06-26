@@ -13,7 +13,7 @@ namespace MzingaCpp
 #define VERSION_STR "0.0.0"
 #endif
 
-constexpr const char *IdString = "id MzingaCpp v" VERSION_STR;
+constexpr const char *IdString = "id StrHive-To-Fly_X_Bees-Knees_Cpp v" VERSION_STR;
 
 constexpr const char *CapabilitiesString = "Mosquito;Ladybug;Pillbug";
 
