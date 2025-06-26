@@ -24,6 +24,7 @@ class MinMax
     private:
 
         float k_qn, k_mq, k_ms, k_mb, k_ma, k_mg, k_mm, k_ml, k_mp, k_nm;
+        std::pair<float, std::string> negamaxUndoStats(Board& board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp, std::atomic<int>& nodeCounter);
         std::pair<float, std::string> negamaxUndo(Board& board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp);
         std::pair<float, std::string> negamax(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp);
         float evaluate(Board& board, int playerColor);

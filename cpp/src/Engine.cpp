@@ -256,6 +256,8 @@ void Engine::BestMove(std::string args)
     ss >> keyword; // Legge il primo token (depth o time)
 
     MinMax minmax = MinMax({1000, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+    //MinMax minmax = MinMax({999.945, 3.53209, 4.95915, 3.11189, -2.50973, 0.749166, 1.84593, -3.32927, -1.16247, 4.11621});
+    
     std::string bestMoveStr;
 
     if (keyword == "depth") {

@@ -22,12 +22,13 @@ struct Individual {
 };
 
 // Parametri del Genetic Algorithm
-const int POP_SIZE = 3;
-const int NUM_GENERATIONS = 2;
+const int POP_SIZE = 10;
+const int NUM_GENERATIONS = 10;
 const float MUTATION_RATE = 0.1f;
 const float MUTATION_STDDEV = 0.2f;
-const int TOURNAMENT_SIZE = 1;
-const int NUM_GAMES_PER_INDIVIDUAL = 2; // Es. 2 come bianco, 2 come nero contro baseline
+const int TOURNAMENT_SIZE = 2; // Dimensione del torneo per la selezione
+const int MAX_TURNS = 100; // Numero massimo di turni per una partita
+const int NUM_GAMES_PER_INDIVIDUAL = 4; // Numero di partite per valutare un individuo
 
 // Pesi di default (baseline) per valutazione
 const vector<float> BASELINE_WEIGHTS = {1000, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -64,7 +65,7 @@ int playGame(const vector<float>& weightsA, const vector<float>& weightsB, bool 
 
     while (!GameIsOver(board.GetBoardState())) {
 
-        if(turn>=100){
+        if(turn>=MAX_TURNS){
             return 0;
         }
 
