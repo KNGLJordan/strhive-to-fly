@@ -19,9 +19,4 @@ RUN chmod +x scripts/clean.sh && ./scripts/clean.sh
 
 RUN chmod +x scripts/build-release.sh && ./scripts/build-release.sh
 
-RUN ls -l build
-
-RUN ls -l build/Release
-
 CMD ["./build/Release/strivecpp"]
-
