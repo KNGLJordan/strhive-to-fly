@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.16.0)
 
-project(mzingacpp VERSION 0.9.8)
+project(strivecpp VERSION 0.0.1)
 
-add_executable(mzingacpp)
+add_executable(strivecpp)
 
-target_compile_definitions(mzingacpp PRIVATE VERSION_STR="${PROJECT_VERSION}")
+target_compile_definitions(strivecpp PRIVATE VERSION_STR="${PROJECT_VERSION}")
 
-target_include_directories(mzingacpp PRIVATE include)
+target_include_directories(strivecpp PRIVATE include)
 
-target_sources(mzingacpp PRIVATE
+target_sources(strivecpp PRIVATE
     src/main.cpp
     src/Board.cpp
     src/Engine.cpp
@@ -20,4 +20,4 @@ target_sources(mzingacpp PRIVATE
     src/ZobristHasher.cpp
 )
 
-set_property(TARGET mzingacpp PROPERTY CXX_STANDARD 17)
+set_property(TARGET strivecpp PROPERTY CXX_STANDARD 17)
