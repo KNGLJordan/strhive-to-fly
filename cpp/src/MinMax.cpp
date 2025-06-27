@@ -36,6 +36,8 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
 
     std::atomic<bool> timeUp(false);
 
+    std::atomic<int> nodeCounter(0);
+
     // if the turn is even, it's white's turn, otherwise it's black's turn
     if(board.GetCurrentTurn()%2==1) 
     {
@@ -48,24 +50,21 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
 
     if(timeLimit==0)
     {
-        std::atomic<int> nodeCounter(0);
+        
 
         std::tie(bestScore, bestMove) = negamaxUndo(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp);
         //std::tie(bestScore, bestMove) = negamaxUndoStats(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp, nodeCounter);
 
-        std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
-        log << "chosen depth " << maxDepth << ", evaluated nodes " << nodeCounter.load() << "\n";
-        log.close();
+        // std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
+        // log << "chosen depth " << maxDepth << ", evaluated nodes " << nodeCounter.load() << "\n";
+        // log.close();
     }
     else
     {
         //---------------------------------ITERATIVE DEEPENING APPROACH---------------------------------------------
 
-        
-
         auto startTime = std::chrono::steady_clock::now();
         int depth = 1;
-        std::atomic<int> nodeCounter(0);
 
         std::thread timerThread([&]() {
             std::this_thread::sleep_for(std::chrono::seconds(timeLimit));
@@ -89,9 +88,9 @@ std::string MinMax::calculateBestMove(Board& board, int maxDepth, int timeLimit)
         
         timerThread.join();
 
-        std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
-        log << "reached " << (depth - 1) << ", evaluated nodes " << nodeCounter.load() << "\n";
-        log.close();
+        // std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
+        // log << "reached " << (depth - 1) << ", evaluated nodes " << nodeCounter.load() << "\n";
+        // log.close();
     }
     
     return bestMove;

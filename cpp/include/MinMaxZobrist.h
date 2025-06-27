@@ -30,6 +30,7 @@ class MinMaxZobrist
         ZobristHasher zobristHasher;  
         std::unordered_map<uint64_t, TTEntry> transpositionTable;
         std::pair<float, std::string> negamax(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp);
+        std::pair<float, std::string> negamaxStats(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp, std::atomic<int>& nodeCounter);
         float evaluate(Board& board, int playerColor);
 };
 } // namespace MzingaCpp

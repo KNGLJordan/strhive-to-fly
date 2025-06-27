@@ -251,50 +251,19 @@ void Engine::BestMove(std::string args)
     //---------------------------------------------------------------------------------------------------------------------------------
 
     //-----------------------------------------------------MINMAX con UNDO MOVE SELECTION-------------------------------------------------------
-    std::istringstream ss(args);
-    std::string keyword;
-    ss >> keyword; // Legge il primo token (depth o time)
-
-    MinMax minmax = MinMax({1000, 1, 1, 1, 1, 1, 1, 1, 1, 1});
-    //MinMax minmax = MinMax({999.945, 3.53209, 4.95915, 3.11189, -2.50973, 0.749166, 1.84593, -3.32927, -1.16247, 4.11621});
-    
-    std::string bestMoveStr;
-
-    if (keyword == "depth") {
-        int depth;
-        if (ss >> depth) { // Converte il valore in intero
-            bestMoveStr = minmax.calculateBestMove(*m_board, depth, 0);
-        }
-    } 
-    else if (keyword == "time") {
-        std::string timeStr;
-        ss >> timeStr; // Legge l'orario in formato "00:00:05"
-
-        int h, m, s;
-        char colon1, colon2;
-        std::istringstream timeSS(timeStr);
-        
-        if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
-            int totalSeconds = h * 3600 + m * 60 + s;
-            bestMoveStr = minmax.calculateBestMove(*m_board, 0, totalSeconds);
-        }
-    }
-
-    WriteLine(bestMoveStr);
-    WriteLine(OkString);
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    //-------------------------------------------------MINMAX ZOBRIST MOVE SELECTION---------------------------------------------------
     // std::istringstream ss(args);
     // std::string keyword;
     // ss >> keyword; // Legge il primo token (depth o time)
 
+    // MinMax minmax = MinMax({1000, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+    // //MinMax minmax = MinMax({999.945, 3.53209, 4.95915, 3.11189, -2.50973, 0.749166, 1.84593, -3.32927, -1.16247, 4.11621});
+    
     // std::string bestMoveStr;
 
     // if (keyword == "depth") {
     //     int depth;
     //     if (ss >> depth) { // Converte il valore in intero
-    //         bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, depth, 0);  // Usa l'oggetto persistente
+    //         bestMoveStr = minmax.calculateBestMove(*m_board, depth, 0);
     //     }
     // } 
     // else if (keyword == "time") {
@@ -307,12 +276,43 @@ void Engine::BestMove(std::string args)
         
     //     if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
     //         int totalSeconds = h * 3600 + m * 60 + s;
-    //         bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, 0, totalSeconds);  // Usa l'oggetto persistente
+    //         bestMoveStr = minmax.calculateBestMove(*m_board, 0, totalSeconds);
     //     }
     // }
 
     // WriteLine(bestMoveStr);
     // WriteLine(OkString);
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------MINMAX ZOBRIST MOVE SELECTION---------------------------------------------------
+    std::istringstream ss(args);
+    std::string keyword;
+    ss >> keyword; // Legge il primo token (depth o time)
+
+    std::string bestMoveStr;
+
+    if (keyword == "depth") {
+        int depth;
+        if (ss >> depth) { // Converte il valore in intero
+            bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, depth, 0);  // Usa l'oggetto persistente
+        }
+    } 
+    else if (keyword == "time") {
+        std::string timeStr;
+        ss >> timeStr; // Legge l'orario in formato "00:00:05"
+
+        int h, m, s;
+        char colon1, colon2;
+        std::istringstream timeSS(timeStr);
+        
+        if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
+            int totalSeconds = h * 3600 + m * 60 + s;
+            bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, 0, totalSeconds);  // Usa l'oggetto persistente
+        }
+    }
+
+    WriteLine(bestMoveStr);
+    WriteLine(OkString);
     //---------------------------------------------------------------------------------------------------------------------------------
 }
 

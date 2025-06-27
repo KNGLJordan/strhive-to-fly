@@ -35,6 +35,8 @@ std::string MinMaxZobrist::calculateBestMove(Board& board, int maxDepth, int tim
 
     std::atomic<bool> timeUp(false);
 
+    std::atomic<int> nodeCounter(0);
+
     if(board.GetCurrentTurn()%2==1) 
     {
         currentTurn = -1; //black
@@ -47,6 +49,11 @@ std::string MinMaxZobrist::calculateBestMove(Board& board, int maxDepth, int tim
     if(timeLimit==0)
     {
         std::tie(bestScore, bestMove) = negamax(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp);
+        // std::tie(bestScore, bestMove) = negamaxStats(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), maxDepth, timeUp, nodeCounter);
+        
+        // std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
+        // log << "chosen depth " << maxDepth << ", evaluated nodes " << nodeCounter.load() << "\n";
+        // log.close();
     }
     else
     {
@@ -61,7 +68,9 @@ std::string MinMaxZobrist::calculateBestMove(Board& board, int maxDepth, int tim
         while (!timeUp) {
             float score;
             std::string move;
+            
             std::tie(score, move) = negamax(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), depth, timeUp);
+            //std::tie(score, move) = negamaxStats(board, currentTurn, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), depth, timeUp, nodeCounter);
             
             if (!move.empty()) {
                 bestScore = score;
@@ -73,21 +82,33 @@ std::string MinMaxZobrist::calculateBestMove(Board& board, int maxDepth, int tim
         
         timerThread.join();
 
-        std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
-        log << "reached"<< " " << depth<< "\n";
-        log.close();
+        // std::ofstream log("/home/francesco/Desktop/franz/scuolaOrtogonale/hive/strhive-to-fly/log/logcpp.txt", std::ios::app);
+        // log << "reached"<< " " << depth<< "\n";
+        // log << "evaluated nodes " << nodeCounter.load() << "\n";
+        // log.close();
     }
     
     return bestMove;
 }
 
-std::pair<float, std::string> MinMaxZobrist::negamax(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp) 
+std::pair<float, std::string> MinMaxZobrist::negamax(
+    Board board, 
+    int playerColor, 
+    float alpha, 
+    float beta, 
+    int maxDepth, 
+    std::atomic<bool>& timeUp) 
 {
-    if (timeUp) return {0, ""};
+    // 1) Se il timer è scaduto, interrompo subito
+    if (timeUp) {
+        return {0, ""};
+    }
 
+
+    // 2) Controllo se presente nella TT con profondità sufficiente
     uint64_t zobristKey = zobristHasher.computeHash(board);
 
-    // Controllo se presente nella TT con profondità sufficiente
+    
     if (transpositionTable.find(zobristKey) != transpositionTable.end()) 
     {
         const TTEntry& entry = transpositionTable[zobristKey];
@@ -109,21 +130,25 @@ std::pair<float, std::string> MinMaxZobrist::negamax(Board board, int playerColo
         }
     }
 
-    BoardState state = board.GetBoardState();
-
-    if (state == BoardState::WhiteWins) 
-    {
-        return (playerColor == 0) ? std::make_pair(-std::numeric_limits<float>::infinity(), "") : std::make_pair(std::numeric_limits<float>::infinity(), "");
-    } 
-    else if (state == BoardState::BlackWins) 
-    {
-        return (playerColor == 1) ? std::make_pair(-std::numeric_limits<float>::infinity(), "") : std::make_pair(std::numeric_limits<float>::infinity(), "");
-    } 
-    else if (state == BoardState::Draw) 
-    {
-        return {0, ""};
+    // 3) Controllo se sono in nodo terminale (vittoria/pareggio)
+   BoardState state = board.GetBoardState();
+    if (state == BoardState::WhiteWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 0)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::BlackWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 1)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::Draw) {
+        return {0.0f, ""};
     }
 
+    // 4) Se ho raggiunto la profondità massima, valuto staticamente
     if (maxDepth == 0) 
     {
         float eval = evaluate(board, playerColor);
@@ -131,92 +156,149 @@ std::pair<float, std::string> MinMaxZobrist::negamax(Board board, int playerColo
         return {eval, ""};
     }
 
-    float value = -std::numeric_limits<float>::infinity();
-    std::string bestMove;
+    // 5) Genero la lista delle mosse valide e ne faccio una valutazione "statica" per l'ordinamento.
     
-    auto validMoves = board.GetValidMoves();
-    std::vector<std::string> moves;
-    std::vector<Board> boards;
-    std::vector<float> scores;
+    //    Memorizzo in una sola struct: (Move, moveString, staticScore)
+    struct MoveEntry {
+        Move        m;
+        std::string str;
+        float       score;
+    };
 
-    // Recupero mossa dalla TT per metterla prima
-    std::string ttBestMove = "";
-    if (transpositionTable.find(zobristKey) != transpositionTable.end()) {
-        ttBestMove = transpositionTable[zobristKey].bestMove;
+    std::vector<MoveEntry> movelist;
+    
+    // Suppongo che GetValidMoves() torni un puntatore/opzionale a std::vector<Move>
+    auto validMovesPtr = board.GetValidMoves();
+    if (!validMovesPtr || validMovesPtr->empty()) {
+        // Se non ci sono mosse valide, è come se fossimo in un nodo terminale di stallo/draw
+        return {0.0f, ""};
     }
 
-    // Aggiungi le mosse alla lista (escludendo la TT per ora)
-    for (const auto& move : *validMoves) 
-    {
+    movelist.reserve(validMovesPtr->size());
+    for (const auto& move : *validMovesPtr) {
         std::string moveStr;
-        if (board.TryGetMoveString(move, moveStr)) 
-        {
-            Board newBoard = board;
+        if (!board.TryGetMoveString(move, moveStr)) {
+            continue;
+        }
 
-            if (newBoard.TryPlayMove(move, moveStr)) 
-            {
-                newBoard.GetGameString();
-                float score = evaluate(newBoard, playerColor);
-                scores.push_back(score);
-                moves.push_back(moveStr);
-                boards.push_back(newBoard);
-            }
+        // Provo ad applicare la mossa
+        if (board.TryPlayMove(move, moveStr)) {
+            // Calcolo la valutazione statica subito dopo aver giocato
+            float staticScore = evaluate(board, playerColor);
+            // Undo per tornare allo stato precedente
+            board.TryUndoLastMove();
+
+            // Memorizzo Move, la sua stringa e il punteggio per l'ordinamento
+            movelist.push_back({ move, moveStr, staticScore });
         }
     }
 
-    // Se esiste una mossa della TT, la metto in cima
-    if (!ttBestMove.empty()) 
-    {
-        auto it = std::find(moves.begin(), moves.end(), ttBestMove);
-        if (it != moves.end()) 
-        {
-            size_t index = std::distance(moves.begin(), it);
-            std::swap(moves[0], moves[index]);
-            std::swap(scores[0], scores[index]);
-            std::swap(boards[0], boards[index]);
-        }
+    // Se dopo il filtro non ci sono mosse (es. nessuna era legale), trattalo come draw:
+    if (movelist.empty()) {
+        return {0.0f, ""};
     }
 
+    // 6) Ordino movelist dal punteggio statico più alto al più basso
+    std::sort(
+        movelist.begin(), movelist.end(),
+        [](MoveEntry const& a, MoveEntry const& b) {
+            return a.score > b.score;
+        }
+    );
+
+    
+    // -----------------------VECCHIO ORDINAMENTO CON TT-----------------------
+    // ----- NOTA: questo codice metteva come prima mossa quella della TT -----
+    
+    // auto validMoves = board.GetValidMoves();
+    // std::vector<std::string> moves;
+    // std::vector<Board> boards;
+    // std::vector<float> scores;
+
+    // // Recupero mossa dalla TT per metterla prima
+    // std::string ttBestMove = "";
+    // if (transpositionTable.find(zobristKey) != transpositionTable.end()) {
+    //     ttBestMove = transpositionTable[zobristKey].bestMove;
+    // }
+
+    // // Aggiungi le mosse alla lista (escludendo la TT per ora)
     // for (const auto& move : *validMoves) 
     // {
     //     std::string moveStr;
     //     if (board.TryGetMoveString(move, moveStr)) 
-    //     {  
+    //     {
     //         Board newBoard = board;
 
     //         if (newBoard.TryPlayMove(move, moveStr)) 
     //         {
     //             newBoard.GetGameString();
     //             float score = evaluate(newBoard, playerColor);
-
-    //             auto it = std::lower_bound(scores.begin(), scores.end(), score, std::greater<float>());
-    //             size_t index = std::distance(scores.begin(), it);
-
-    //             scores.insert(it, score);
-    //             moves.insert(moves.begin() + index, moveStr);
-    //             boards.insert(boards.begin() + index, newBoard);
+    //             scores.push_back(score);
+    //             moves.push_back(moveStr);
+    //             boards.push_back(newBoard);
     //         }
     //     }
     // }
 
-    // Salvo alpha che potrebbe essere aggiornato
+    // // Se esiste una mossa della TT, la metto in cima
+    // if (!ttBestMove.empty()) 
+    // {
+    //     auto it = std::find(moves.begin(), moves.end(), ttBestMove);
+    //     if (it != moves.end()) 
+    //     {
+    //         size_t index = std::distance(moves.begin(), it);
+    //         std::swap(moves[0], moves[index]);
+    //         std::swap(scores[0], scores[index]);
+    //         std::swap(boards[0], boards[index]);
+    //     }
+    // }
+
+    // -----------------------FINE VECCHIO ORDINAMENTO CON TT-----------------------
+
+
+    // 7) Salvo alpha che potrebbe essere aggiornato
     float originalAlpha = alpha;   
 
-    for (size_t i = 0; i < moves.size(); ++i) 
-    {
-        if (timeUp) break;
+    // 8) Negamax ricorsivo con alpha-beta
 
-        auto [score, _] = negamax(boards[i], playerColor * -1, -beta, -alpha, maxDepth - 1, timeUp);
-        score = -score;
+    float value = -std::numeric_limits<float>::infinity();
+    std::string bestMove = "";
+
+     for (auto& entry : movelist) 
+    {
+        if (timeUp){
+            break;   
+        }
+
+        // Applico direttamente la mossa "entry.m" usando la stringa pre-memorizzata "entry.str"
+        if (!board.TryPlayMove(entry.m, entry.str)) {
+            // Se per qualche motivo TryPlayMove fallisce, skippo
+            continue;
+        }
+
+        // Chiamata ricorsiva: cambio segno, scambio alpha/beta, profondità-1
+        auto [childScore, _childMove] =
+            negamax(board, -playerColor, -beta, -alpha, maxDepth - 1, timeUp);
+        float score = -childScore;
+
+        // Torno indietro al nodo padre
+        board.TryUndoLastMove();
         
+        // Se lo score è migliore del valore corrente, aggiorno
+        // e salvo la mossa migliore
         if (score > value) 
         {
             value = score;
-            bestMove = moves[i];
+            bestMove = entry.str;
         }
         
+        // Aggiorno alpha
         alpha = std::max(alpha, value);
-        if (alpha >= beta) break; 
+
+        // Se alpha è maggiore o uguale a beta, faccio pruning
+        if (alpha >= beta) { 
+            break;
+        } 
     }
 
     Flag flag;
@@ -242,6 +324,242 @@ std::pair<float, std::string> MinMaxZobrist::negamax(Board board, int playerColo
     return {value, bestMove};
 }
 
+std::pair<float, std::string> MinMaxZobrist::negamaxStats(
+    Board board, 
+    int playerColor, 
+    float alpha, 
+    float beta, 
+    int maxDepth, 
+    std::atomic<bool>& timeUp,
+    std::atomic<int>& nodeCounter) 
+{
+    // 0) Incrementa i nodi visitati
+    nodeCounter++;
+
+    // 1) Se il timer è scaduto, interrompo subito
+    if (timeUp) {
+        return {0, ""};
+    }
+
+
+    // 2) Controllo se presente nella TT con profondità sufficiente
+    uint64_t zobristKey = zobristHasher.computeHash(board);
+
+    
+    if (transpositionTable.find(zobristKey) != transpositionTable.end()) 
+    {
+        const TTEntry& entry = transpositionTable[zobristKey];
+
+        if (entry.depth >= maxDepth) 
+        {
+            if (entry.flag == Flag::EXACT) 
+            {
+                return {entry.value, entry.bestMove};
+            } 
+            else if (entry.flag == Flag::LOWER_BOUND && entry.value >= beta) 
+            {
+                return {entry.value, entry.bestMove};
+            } 
+            else if (entry.flag == Flag::UPPER_BOUND && entry.value <= alpha) 
+            {
+                return {entry.value, entry.bestMove}; 
+            }
+        }
+    }
+
+    // 3) Controllo se sono in nodo terminale (vittoria/pareggio)
+   BoardState state = board.GetBoardState();
+    if (state == BoardState::WhiteWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 0)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::BlackWins) {
+        float inf = std::numeric_limits<float>::infinity();
+        return (playerColor == 1)
+            ? std::make_pair(-inf, "")
+            : std::make_pair(+inf, "");
+    }
+    else if (state == BoardState::Draw) {
+        return {0.0f, ""};
+    }
+
+    // 4) Se ho raggiunto la profondità massima, valuto staticamente
+    if (maxDepth == 0) 
+    {
+        float eval = evaluate(board, playerColor);
+        transpositionTable[zobristKey] = {eval, "", maxDepth, Flag::EXACT};
+        return {eval, ""};
+    }
+
+    // 5) Genero la lista delle mosse valide e ne faccio una valutazione "statica" per l'ordinamento.
+    
+    //    Memorizzo in una sola struct: (Move, moveString, staticScore)
+    struct MoveEntry {
+        Move        m;
+        std::string str;
+        float       score;
+    };
+
+    std::vector<MoveEntry> movelist;
+    
+    // Suppongo che GetValidMoves() torni un puntatore/opzionale a std::vector<Move>
+    auto validMovesPtr = board.GetValidMoves();
+    if (!validMovesPtr || validMovesPtr->empty()) {
+        // Se non ci sono mosse valide, è come se fossimo in un nodo terminale di stallo/draw
+        return {0.0f, ""};
+    }
+
+    movelist.reserve(validMovesPtr->size());
+    for (const auto& move : *validMovesPtr) {
+        std::string moveStr;
+        if (!board.TryGetMoveString(move, moveStr)) {
+            continue;
+        }
+
+        // Provo ad applicare la mossa
+        if (board.TryPlayMove(move, moveStr)) {
+            // Calcolo la valutazione statica subito dopo aver giocato
+            float staticScore = evaluate(board, playerColor);
+            // Undo per tornare allo stato precedente
+            board.TryUndoLastMove();
+
+            // Memorizzo Move, la sua stringa e il punteggio per l'ordinamento
+            movelist.push_back({ move, moveStr, staticScore });
+        }
+    }
+
+    // Se dopo il filtro non ci sono mosse (es. nessuna era legale), trattalo come draw:
+    if (movelist.empty()) {
+        return {0.0f, ""};
+    }
+
+    // 6) Ordino movelist dal punteggio statico più alto al più basso
+    std::sort(
+        movelist.begin(), movelist.end(),
+        [](MoveEntry const& a, MoveEntry const& b) {
+            return a.score > b.score;
+        }
+    );
+
+    
+    // -----------------------VECCHIO ORDINAMENTO CON TT-----------------------
+    // ----- NOTA: questo codice metteva come prima mossa quella della TT -----
+    
+    // auto validMoves = board.GetValidMoves();
+    // std::vector<std::string> moves;
+    // std::vector<Board> boards;
+    // std::vector<float> scores;
+
+    // // Recupero mossa dalla TT per metterla prima
+    // std::string ttBestMove = "";
+    // if (transpositionTable.find(zobristKey) != transpositionTable.end()) {
+    //     ttBestMove = transpositionTable[zobristKey].bestMove;
+    // }
+
+    // // Aggiungi le mosse alla lista (escludendo la TT per ora)
+    // for (const auto& move : *validMoves) 
+    // {
+    //     std::string moveStr;
+    //     if (board.TryGetMoveString(move, moveStr)) 
+    //     {
+    //         Board newBoard = board;
+
+    //         if (newBoard.TryPlayMove(move, moveStr)) 
+    //         {
+    //             newBoard.GetGameString();
+    //             float score = evaluate(newBoard, playerColor);
+    //             scores.push_back(score);
+    //             moves.push_back(moveStr);
+    //             boards.push_back(newBoard);
+    //         }
+    //     }
+    // }
+
+    // // Se esiste una mossa della TT, la metto in cima
+    // if (!ttBestMove.empty()) 
+    // {
+    //     auto it = std::find(moves.begin(), moves.end(), ttBestMove);
+    //     if (it != moves.end()) 
+    //     {
+    //         size_t index = std::distance(moves.begin(), it);
+    //         std::swap(moves[0], moves[index]);
+    //         std::swap(scores[0], scores[index]);
+    //         std::swap(boards[0], boards[index]);
+    //     }
+    // }
+
+    // -----------------------FINE VECCHIO ORDINAMENTO CON TT-----------------------
+
+
+    // 7) Salvo alpha che potrebbe essere aggiornato
+    float originalAlpha = alpha;   
+
+    // 8) Negamax ricorsivo con alpha-beta
+
+    float value = -std::numeric_limits<float>::infinity();
+    std::string bestMove = "";
+
+     for (auto& entry : movelist) 
+    {
+        if (timeUp){
+            break;   
+        }
+
+        // Applico direttamente la mossa "entry.m" usando la stringa pre-memorizzata "entry.str"
+        if (!board.TryPlayMove(entry.m, entry.str)) {
+            // Se per qualche motivo TryPlayMove fallisce, skippo
+            continue;
+        }
+
+        // Chiamata ricorsiva: cambio segno, scambio alpha/beta, profondità-1
+        auto [childScore, _childMove] =
+            negamaxStats(board, -playerColor, -beta, -alpha, maxDepth - 1, timeUp, nodeCounter);
+        float score = -childScore;
+
+        // Torno indietro al nodo padre
+        board.TryUndoLastMove();
+        
+        // Se lo score è migliore del valore corrente, aggiorno
+        // e salvo la mossa migliore
+        if (score > value) 
+        {
+            value = score;
+            bestMove = entry.str;
+        }
+        
+        // Aggiorno alpha
+        alpha = std::max(alpha, value);
+
+        // Se alpha è maggiore o uguale a beta, faccio pruning
+        if (alpha >= beta) { 
+            break;
+        } 
+    }
+
+    Flag flag;
+    if (value <= originalAlpha) 
+    {
+        flag = Flag::UPPER_BOUND;  // valore minore dell'alpha originale
+    } 
+    else if (value >= beta) 
+    {
+        flag = Flag::LOWER_BOUND;  // valore maggiore di beta
+    } 
+    else 
+    {
+        flag = Flag::EXACT;        // valore esatto
+    }
+
+    // Salvo nella TT solo se la profondità è maggiore
+    if (transpositionTable.find(zobristKey) == transpositionTable.end() || transpositionTable[zobristKey].depth < maxDepth) 
+    {
+        transpositionTable[zobristKey] = {value, bestMove, maxDepth, flag};
+    }
+
+    return {value, bestMove};
+}
 
 float MinMaxZobrist::evaluate(Board& board, int playerColor) {
 
