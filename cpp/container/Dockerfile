@@ -1,6 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -9,14 +9,16 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
 
 RUN git clone https://github.com/KNGLJordan/strhive-to-fly.git .
 
 WORKDIR /app/cpp
 
-RUN chmod +x scripts/clean.sh && ./scripts/clean.sh
+RUN mkdir -p build \
+    && cd build \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=Release/ \
+    && cmake --build . --config Release
 
-RUN chmod +x scripts/build-release.sh && ./scripts/build-release.sh
+WORKDIR /app
 
-CMD ["./build/Release/strivecpp"]
+CMD ["./cpp/build/Release/strivecpp"]
