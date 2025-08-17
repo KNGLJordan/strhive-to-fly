@@ -13,7 +13,20 @@ using namespace MzingaCpp;
 
 Engine::Engine(std::function<void(std::string)> writeLine) : 
     m_writeLine{writeLine}, 
-    minmaxZobrist({1000, 1, 1, 1, 1, 1, 1, 1, 1, 1})
+    minmaxZobrist(false)
+
+    // // Opzione 1: Tutto default, evaluate classica
+    // minmaxZobrist(false)
+
+    // // Opzione 2: Tutto default, evaluate enhanced
+    // minmaxZobrist(true)
+
+    // // Opzione 3: Pesi personalizzati con struct
+    // EvaluationWeights customWeights;
+    // customWeights.k_qn = 2000.0f;
+    // customWeights.k_mq = 2.0f;
+    // customWeights.k_pieces_in_play = 1.0f;
+    // minmaxZobrist(customWeights, true)
 {
 }
 

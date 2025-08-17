@@ -28,6 +28,38 @@ struct PositionHashWrapper {
     }
 };
 
+struct PieceMetrics
+{
+    int InPlay = 0;
+    int IsPinned = 0; 
+    int IsCovered = 0;
+    int NoisyMoveCount = 0;
+    int QuietMoveCount = 0;
+    int FriendlyNeighborCount = 0;
+    int EnemyNeighborCount = 0;
+};
+
+struct BoardMetrics
+{
+    MzingaCpp::BoardState BoardState;
+    int PiecesInPlay = 0;
+    int PiecesInHand = 0;
+    
+    // Metrics for each piece type - you can index by PieceName
+    PieceMetrics pieceMetrics[(int)PieceName::NumPieceNames];
+    
+    // Accessor for easier syntax
+    PieceMetrics& operator[](PieceName pieceName) 
+    {
+        return pieceMetrics[(int)pieceName];
+    }
+    
+    const PieceMetrics& operator[](PieceName pieceName) const 
+    {
+        return pieceMetrics[(int)pieceName];
+    }
+};
+
 class Board
 {
   public:
@@ -35,6 +67,7 @@ class Board
 
     BoardState GetBoardState();
     int GetCurrentTurn();
+    GameType GetGameType();
 
     std::string GetGameString();
     std::shared_ptr<MoveSet> GetValidMoves();
@@ -53,10 +86,20 @@ class Board
 
     std::vector<std::pair<PieceName, Position>> GetPiecesAndPositions();
 
+    BoardMetrics GetBoardMetrics();
+    bool IsNoisyMove(const Move& move);
+    void SetCurrentPlayerMetrics(BoardMetrics& boardMetrics, std::shared_ptr<MoveSet> moveSet);
+    bool IsPinned(PieceName pieceName, std::shared_ptr<MoveSet> moveSet, int& noisyCount, int& quietCount);
+    int CountNeighbors(PieceName pieceName, int& friendlyCount, int& enemyCount);
+
   private:
     // Articulation points (cut vertices) cache
     mutable bool m_articulationPositionsReady = false;
     mutable std::unordered_set<Position, PositionHashWrapper> m_articulationPositions;
+    
+    // Cached valid placements for pieces around enemy queen
+    mutable std::unordered_set<Position, PositionHashWrapper> m_cachedEnemyQueenNeighbors;
+    mutable bool m_cachedEnemyQueenNeighborsReady = false;
 
     // Updates articulation points using Tarjan's algorithm
     void UpdateArticulationPoints() const;

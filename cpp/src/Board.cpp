@@ -44,6 +44,11 @@ int Board::GetCurrentTurn()
     return m_currentTurn;
 }
 
+GameType Board::GetGameType()
+{
+    return m_gameType;
+}
+
 std::string Board::GetGameString()
 {
     std::ostringstream str;
@@ -1245,6 +1250,8 @@ void Board::ResetCaches()
     m_cachedValidPlacements.clear();
     m_articulationPositionsReady = false;
     m_articulationPositions.clear();
+    m_cachedEnemyQueenNeighborsReady = false;
+    m_cachedEnemyQueenNeighbors.clear();
 }
 
 std::vector<std::pair<PieceName, Position>> MzingaCpp::Board::GetPiecesAndPositions() 
@@ -1259,4 +1266,165 @@ std::vector<std::pair<PieceName, Position>> MzingaCpp::Board::GetPiecesAndPositi
     }
     
     return piecesInPlay;
+}
+
+BoardMetrics Board::GetBoardMetrics()
+{
+    BoardMetrics boardMetrics;
+    boardMetrics.BoardState = m_boardState;
+    
+    // Get the metrics for the current turn
+    if (GameInProgress(m_boardState))
+    {
+        auto currentValidMoves = GetValidMoves();
+        SetCurrentPlayerMetrics(boardMetrics, currentValidMoves);
+        
+        // Save off cache objects until return
+        auto enemyQueenNeighbors = m_cachedEnemyQueenNeighbors;
+        bool enemyQueenNeighborsReady = m_cachedEnemyQueenNeighborsReady;
+        
+        // Spoof going to the next turn to get the opponent's metrics
+        m_currentTurn++;
+        ResetState();
+        ResetCaches();
+        
+        auto nextValidMoves = GetValidMoves();
+        SetCurrentPlayerMetrics(boardMetrics, nextValidMoves);
+        
+        m_currentTurn--;
+        ResetState();
+        ResetCaches();
+        
+        // Restore saved cached objects
+        m_cachedEnemyQueenNeighbors = enemyQueenNeighbors;
+        m_cachedEnemyQueenNeighborsReady = enemyQueenNeighborsReady;
+    }
+    
+    return boardMetrics;
+}
+
+void Board::SetCurrentPlayerMetrics(BoardMetrics& boardMetrics, std::shared_ptr<MoveSet> moveSet)
+{
+    int startPiece = (int)(m_currentColor == Color::White ? PieceName::wQ : PieceName::bQ);
+    int endPiece = (int)(m_currentColor == Color::White ? PieceName::bQ : PieceName::NumPieceNames);
+    
+    for (int pn = startPiece; pn < endPiece; pn++)
+    {
+        auto pieceName = (PieceName)pn;
+        
+        if (PieceNameIsEnabledForGameType(pieceName, m_gameType))
+        {
+            bool pieceInPlay = PieceInPlay(pieceName);
+            if (pieceInPlay)
+            {
+                boardMetrics.PiecesInPlay++;
+                boardMetrics[pieceName].InPlay = 1;
+            }
+            else
+            {
+                boardMetrics.PiecesInHand++;
+                boardMetrics[pieceName].InPlay = 0;
+            }
+            
+            // Move metrics
+            int noisyCount, quietCount;
+            bool isPinned = IsPinned(pieceName, moveSet, noisyCount, quietCount);
+            
+            boardMetrics[pieceName].IsPinned = isPinned ? 1 : 0;
+            boardMetrics[pieceName].IsCovered = pieceInPlay && !PieceIsOnTop(pieceName) ? 1 : 0;
+            boardMetrics[pieceName].NoisyMoveCount = noisyCount;
+            boardMetrics[pieceName].QuietMoveCount = quietCount;
+            
+            int friendlyCount, enemyCount;
+            CountNeighbors(pieceName, friendlyCount, enemyCount);
+            boardMetrics[pieceName].FriendlyNeighborCount = friendlyCount;
+            boardMetrics[pieceName].EnemyNeighborCount = enemyCount;
+        }
+    }
+}
+
+bool Board::IsPinned(PieceName pieceName, std::shared_ptr<MoveSet> moveSet, int& noisyCount, int& quietCount)
+{
+    noisyCount = 0;
+    quietCount = 0;
+    
+    for (const auto& move : *moveSet)
+    {
+        if (move.PieceName == pieceName)
+        {
+            if (IsNoisyMove(move))
+            {
+                noisyCount++;
+            }
+            else
+            {
+                quietCount++;
+            }
+        }
+    }
+    
+    return (noisyCount + quietCount) == 0;
+}
+
+bool Board::IsNoisyMove(const Move& move)
+{
+    if (move == PassMove)
+    {
+        return false;
+    }
+    
+    if (!m_cachedEnemyQueenNeighborsReady)
+    {
+        m_cachedEnemyQueenNeighbors.clear();
+        
+        Position enemyQueenPosition = GetPosition(m_currentColor == Color::White ? PieceName::bQ : PieceName::wQ);
+        
+        if (enemyQueenPosition.Stack >= 0)  // Enemy queen is in play
+        {
+            // Add queen's neighboring positions
+            for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
+            {
+                m_cachedEnemyQueenNeighbors.insert(enemyQueenPosition.GetNeighborAt((Direction)dir));
+            }
+        }
+        
+        m_cachedEnemyQueenNeighborsReady = true;
+    }
+    
+    // A move is noisy if it moves to a position adjacent to the enemy queen
+    // AND the piece wasn't already adjacent to the enemy queen
+    bool movesToEnemyQueenNeighbor = m_cachedEnemyQueenNeighbors.find(move.Destination) != m_cachedEnemyQueenNeighbors.end();
+    bool alreadyAdjacentToEnemyQueen = m_cachedEnemyQueenNeighbors.find(GetPosition(move.PieceName)) != m_cachedEnemyQueenNeighbors.end();
+    
+    return movesToEnemyQueenNeighbor && !alreadyAdjacentToEnemyQueen;
+}
+
+int Board::CountNeighbors(PieceName pieceName, int& friendlyCount, int& enemyCount)
+{
+    friendlyCount = 0;
+    enemyCount = 0;
+    
+    if (PieceInPlay(pieceName))
+    {
+        auto pieceColor = GetColor(pieceName);
+        auto position = GetPosition(pieceName);
+        
+        for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
+        {
+            auto neighbor = GetPieceAt(position, (Direction)dir);
+            if (neighbor != PieceName::INVALID)
+            {
+                if (pieceColor == GetColor(neighbor))
+                {
+                    friendlyCount++;
+                }
+                else
+                {
+                    enemyCount++;
+                }
+            }
+        }
+    }
+    
+    return friendlyCount + enemyCount;
 }

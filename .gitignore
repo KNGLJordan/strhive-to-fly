@@ -3,5 +3,5 @@ python/build/
 python/data/
 python/dist/
 python/model/
-log
+log/
 cpp/build/

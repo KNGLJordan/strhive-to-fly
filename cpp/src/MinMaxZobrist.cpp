@@ -13,17 +13,49 @@
 
 using namespace MzingaCpp;
 
-MinMaxZobrist::MinMaxZobrist(std::vector<float> weights) 
+// Costruttore con solo flag booleano (usa tutti i default)
+MinMaxZobrist::MinMaxZobrist(bool useEnhancedEval) 
+    : weights(), useEnhanced(useEnhancedEval)
 {
-    if (weights.size() != 10) 
-    {
-        throw std::invalid_argument("weights list must contain exactly 10 float values");
+}
+
+// Costruttore con struct EvaluationWeights
+MinMaxZobrist::MinMaxZobrist(const EvaluationWeights& w, bool useEnhancedEval) 
+    : weights(w), useEnhanced(useEnhancedEval)
+{
+}
+
+// Costruttore legacy con vector (mantieni per compatibilità)
+MinMaxZobrist::MinMaxZobrist(std::vector<float> w, bool useEnhancedEval) 
+    : weights(), useEnhanced(useEnhancedEval)
+{
+    if (!w.empty()) {
+        if (w.size() >= 1) weights.k_qn = w[0];
+        if (w.size() >= 2) weights.k_mq = w[1];
+        if (w.size() >= 3) weights.k_ms = w[2];
+        if (w.size() >= 4) weights.k_mb = w[3];
+        if (w.size() >= 5) weights.k_ma = w[4];
+        if (w.size() >= 6) weights.k_mg = w[5];
+        if (w.size() >= 7) weights.k_mm = w[6];
+        if (w.size() >= 8) weights.k_ml = w[7];
+        if (w.size() >= 9) weights.k_mp = w[8];
+        if (w.size() >= 10) weights.k_nm = w[9];
+        
+        if (useEnhanced) {
+            if (w.size() >= 11) weights.k_pieces_in_play = w[10];
+            if (w.size() >= 12) weights.k_pieces_in_hand = w[11];
+            if (w.size() >= 13) weights.k_pinned_pieces = w[12];
+            if (w.size() >= 14) weights.k_covered_pieces = w[13];
+            if (w.size() >= 15) weights.k_noisy_moves = w[14];
+            if (w.size() >= 16) weights.k_quiet_moves = w[15];
+            if (w.size() >= 17) weights.k_friendly_neighbors = w[16];
+            if (w.size() >= 18) weights.k_enemy_neighbors = w[17];
+            if (w.size() >= 19) weights.k_queen_safety = w[18];
+            if (w.size() >= 20) weights.k_ant_mobility = w[19];
+            if (w.size() >= 21) weights.k_beetle_coverage = w[20];
+            if (w.size() >= 22) weights.k_spider_positioning = w[21];
+        }
     }
-    
-    k_qn = weights[0];
-    k_mq = weights[1]; k_ms = weights[2]; k_mb = weights[3]; k_ma = weights[4];
-    k_mg = weights[5]; k_mm = weights[6]; k_ml = weights[7]; k_mp = weights[8];
-    k_nm = weights[9];
 }
 
 std::string MinMaxZobrist::calculateBestMove(Board& board, int maxDepth, int timeLimit) 
@@ -151,7 +183,7 @@ std::pair<float, std::string> MinMaxZobrist::negamax(
     // 4) Se ho raggiunto la profondità massima, valuto staticamente
     if (maxDepth == 0) 
     {
-        float eval = evaluate(board, playerColor);
+        float eval = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
         transpositionTable[zobristKey] = {eval, "", maxDepth, Flag::EXACT};
         return {eval, ""};
     }
@@ -184,7 +216,7 @@ std::pair<float, std::string> MinMaxZobrist::negamax(
         // Provo ad applicare la mossa
         if (board.TryPlayMove(move, moveStr)) {
             // Calcolo la valutazione statica subito dopo aver giocato
-            float staticScore = evaluate(board, playerColor);
+            float staticScore = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
             // Undo per tornare allo stato precedente
             board.TryUndoLastMove();
 
@@ -388,7 +420,7 @@ std::pair<float, std::string> MinMaxZobrist::negamaxStats(
     // 4) Se ho raggiunto la profondità massima, valuto staticamente
     if (maxDepth == 0) 
     {
-        float eval = evaluate(board, playerColor);
+        float eval = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
         transpositionTable[zobristKey] = {eval, "", maxDepth, Flag::EXACT};
         return {eval, ""};
     }
@@ -421,7 +453,7 @@ std::pair<float, std::string> MinMaxZobrist::negamaxStats(
         // Provo ad applicare la mossa
         if (board.TryPlayMove(move, moveStr)) {
             // Calcolo la valutazione statica subito dopo aver giocato
-            float staticScore = evaluate(board, playerColor);
+            float staticScore = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
             // Undo per tornare allo stato precedente
             board.TryUndoLastMove();
 
@@ -662,38 +694,38 @@ float MinMaxZobrist::evaluate(Board& board, int playerColor) {
     if(maximizingColor==1) //maximizing White
     {
         // Queen neighbors
-        evaluation += (bQ_neighbors - wQ_neighbors) * k_qn;
+        evaluation += (bQ_neighbors - wQ_neighbors) * weights.k_qn;
 
         // Mobility
-        evaluation += (wQ_moves - bQ_moves) * k_mq;
-        evaluation += (wS_moves - bS_moves) * k_ms;
-        evaluation += (wB_moves - bB_moves) * k_mb;
-        evaluation += (wA_moves - bA_moves) * k_ma;
-        evaluation += (wG_moves - bG_moves) * k_mg;
-        evaluation += (wM_moves - bM_moves) * k_mm;
-        evaluation += (wL_moves - bL_moves) * k_ml;
-        evaluation += (wP_moves - bP_moves) * k_mp;
+        evaluation += (wQ_moves - bQ_moves) * weights.k_mq;
+        evaluation += (wS_moves - bS_moves) * weights.k_ms;
+        evaluation += (wB_moves - bB_moves) * weights.k_mb;
+        evaluation += (wA_moves - bA_moves) * weights.k_ma;
+        evaluation += (wG_moves - bG_moves) * weights.k_mg;
+        evaluation += (wM_moves - bM_moves) * weights.k_mm;
+        evaluation += (wL_moves - bL_moves) * weights.k_ml;
+        evaluation += (wP_moves - bP_moves) * weights.k_mp;
 
         // Number of moves
-        evaluation += (w_moves - b_moves) * k_nm;
+        evaluation += (w_moves - b_moves) * weights.k_nm;
     }
     else // maximizing Black
     {
         // Queen neighbors
-        evaluation += (wQ_neighbors - bQ_neighbors) * k_qn;
+        evaluation += (wQ_neighbors - bQ_neighbors) * weights.k_qn;
 
         // Mobility
-        evaluation += (bQ_moves - wQ_moves) * k_mq;
-        evaluation += (bS_moves - wS_moves) * k_ms;
-        evaluation += (bB_moves - wB_moves) * k_mb;
-        evaluation += (bA_moves - wA_moves) * k_ma;
-        evaluation += (bG_moves - wG_moves) * k_mg;
-        evaluation += (bM_moves - wM_moves) * k_mm;
-        evaluation += (bL_moves - wL_moves) * k_ml;
-        evaluation += (bP_moves - wP_moves) * k_mp;
+        evaluation += (bQ_moves - wQ_moves) * weights.k_mq;
+        evaluation += (bS_moves - wS_moves) * weights.k_ms;
+        evaluation += (bB_moves - wB_moves) * weights.k_mb;
+        evaluation += (bA_moves - wA_moves) * weights.k_ma;
+        evaluation += (bG_moves - wG_moves) * weights.k_mg;
+        evaluation += (bM_moves - wM_moves) * weights.k_mm;
+        evaluation += (bL_moves - wL_moves) * weights.k_ml;
+        evaluation += (bP_moves - wP_moves) * weights.k_mp;
 
         // Number of moves
-        evaluation += (b_moves - w_moves) * k_nm;
+        evaluation += (b_moves - w_moves) * weights.k_nm;
 
     }
 
@@ -701,5 +733,142 @@ float MinMaxZobrist::evaluate(Board& board, int playerColor) {
     // log << "Evaluation -> " << evaluation << "\n";
     // log.close();
 
+    return evaluation;
+}
+
+float MinMaxZobrist::evaluate2(Board& board, int playerColor) {
+    // Get comprehensive board metrics
+    BoardMetrics metrics = board.GetBoardMetrics();
+    
+    float evaluation = 0.0f;
+    
+    // Determine which color we're maximizing vs minimizing
+    Color maxColor = (playerColor == 1) ? Color::White : Color::Black;
+    Color minColor = (playerColor == 1) ? Color::Black : Color::White;
+    
+    // Basic piece count metrics
+    int maxPiecesInPlay = 0, minPiecesInPlay = 0;
+    int maxPiecesInHand = 0, minPiecesInHand = 0;
+    int maxPinnedPieces = 0, minPinnedPieces = 0;
+    int maxCoveredPieces = 0, minCoveredPieces = 0;
+    int maxNoisyMoves = 0, minNoisyMoves = 0;
+    int maxQuietMoves = 0, minQuietMoves = 0;
+    int maxFriendlyNeighbors = 0, minFriendlyNeighbors = 0;
+    int maxEnemyNeighbors = 0, minEnemyNeighbors = 0;
+    
+    // Queen-specific metrics
+    PieceName maxQueen = (maxColor == Color::White) ? PieceName::wQ : PieceName::bQ;
+    PieceName minQueen = (maxColor == Color::White) ? PieceName::bQ : PieceName::wQ;
+    
+    int maxQueenNeighbors = metrics[maxQueen].FriendlyNeighborCount + metrics[maxQueen].EnemyNeighborCount;
+    int minQueenNeighbors = metrics[minQueen].FriendlyNeighborCount + metrics[minQueen].EnemyNeighborCount;
+    
+    // Piece-type specific metrics
+    struct PieceTypeMetrics {
+        int mobility = 0;
+        int noisyMoves = 0;
+        int quietMoves = 0;
+        int pinned = 0;
+        int covered = 0;
+        int friendlyNeighbors = 0;
+        int enemyNeighbors = 0;
+    };
+    
+    PieceTypeMetrics maxPieces[(int)BugType::NumBugTypes] = {};
+    PieceTypeMetrics minPieces[(int)BugType::NumBugTypes] = {};
+    
+    // Collect metrics for all pieces
+    for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++) {
+        PieceName piece = (PieceName)pn;
+        Color pieceColor = GetColor(piece);
+        BugType bugType = GetBugType(piece);
+        
+        if (!PieceNameIsEnabledForGameType(piece, board.GetGameType())) {
+            continue;
+        }
+        
+        const PieceMetrics& pm = metrics[piece];
+        
+        if (pieceColor == maxColor) {
+            maxPiecesInPlay += pm.InPlay;
+            maxPiecesInHand += (1 - pm.InPlay);
+            maxPinnedPieces += pm.IsPinned;
+            maxCoveredPieces += pm.IsCovered;
+            maxNoisyMoves += pm.NoisyMoveCount;
+            maxQuietMoves += pm.QuietMoveCount;
+            maxFriendlyNeighbors += pm.FriendlyNeighborCount;
+            maxEnemyNeighbors += pm.EnemyNeighborCount;
+            
+            maxPieces[(int)bugType].mobility += pm.NoisyMoveCount + pm.QuietMoveCount;
+            maxPieces[(int)bugType].noisyMoves += pm.NoisyMoveCount;
+            maxPieces[(int)bugType].quietMoves += pm.QuietMoveCount;
+            maxPieces[(int)bugType].pinned += pm.IsPinned;
+            maxPieces[(int)bugType].covered += pm.IsCovered;
+            maxPieces[(int)bugType].friendlyNeighbors += pm.FriendlyNeighborCount;
+            maxPieces[(int)bugType].enemyNeighbors += pm.EnemyNeighborCount;
+        } else {
+            minPiecesInPlay += pm.InPlay;
+            minPiecesInHand += (1 - pm.InPlay);
+            minPinnedPieces += pm.IsPinned;
+            minCoveredPieces += pm.IsCovered;
+            minNoisyMoves += pm.NoisyMoveCount;
+            minQuietMoves += pm.QuietMoveCount;
+            minFriendlyNeighbors += pm.FriendlyNeighborCount;
+            minEnemyNeighbors += pm.EnemyNeighborCount;
+            
+            minPieces[(int)bugType].mobility += pm.NoisyMoveCount + pm.QuietMoveCount;
+            minPieces[(int)bugType].noisyMoves += pm.NoisyMoveCount;
+            minPieces[(int)bugType].quietMoves += pm.QuietMoveCount;
+            minPieces[(int)bugType].pinned += pm.IsPinned;
+            minPieces[(int)bugType].covered += pm.IsCovered;
+            minPieces[(int)bugType].friendlyNeighbors += pm.FriendlyNeighborCount;
+            minPieces[(int)bugType].enemyNeighbors += pm.EnemyNeighborCount;
+        }
+    }
+    
+    // // 1. Queen Safety (existing logic but enhanced)
+    // evaluation += (minQueenNeighbors - maxQueenNeighbors) * weights.k_qn;
+    
+    // // Extra penalty if our queen is highly threatened
+    // if (maxQueenNeighbors >= 4) {
+    //     evaluation += weights.k_queen_safety * (maxQueenNeighbors - 3);
+    // }
+    
+    // // 2. Basic Mobility (similar to original but using metrics data)
+    // evaluation += (maxPieces[(int)BugType::QueenBee].mobility - minPieces[(int)BugType::QueenBee].mobility) * weights.k_mq;
+    // evaluation += (maxPieces[(int)BugType::Spider].mobility - minPieces[(int)BugType::Spider].mobility) * weights.k_ms;
+    // evaluation += (maxPieces[(int)BugType::Beetle].mobility - minPieces[(int)BugType::Beetle].mobility) * weights.k_mb;
+    // evaluation += (maxPieces[(int)BugType::SoldierAnt].mobility - minPieces[(int)BugType::SoldierAnt].mobility) * weights.k_ma;
+    // evaluation += (maxPieces[(int)BugType::Grasshopper].mobility - minPieces[(int)BugType::Grasshopper].mobility) * weights.k_mg;
+    // evaluation += (maxPieces[(int)BugType::Mosquito].mobility - minPieces[(int)BugType::Mosquito].mobility) * weights.k_mm;
+    // evaluation += (maxPieces[(int)BugType::Ladybug].mobility - minPieces[(int)BugType::Ladybug].mobility) * weights.k_ml;
+    // evaluation += (maxPieces[(int)BugType::Pillbug].mobility - minPieces[(int)BugType::Pillbug].mobility) * weights.k_mp;
+    
+    // 3. Enhanced Strategic Metrics
+    evaluation += (maxPiecesInPlay - minPiecesInPlay) * weights.k_pieces_in_play;
+    evaluation += (maxPiecesInHand - minPiecesInHand) * weights.k_pieces_in_hand;
+    evaluation += (maxPinnedPieces - minPinnedPieces) * weights.k_pinned_pieces;
+    evaluation += (maxCoveredPieces - minCoveredPieces) * weights.k_covered_pieces;
+    evaluation += (maxNoisyMoves - minNoisyMoves) * weights.k_noisy_moves;
+    evaluation += (maxQuietMoves - minQuietMoves) * weights.k_quiet_moves;
+    evaluation += (maxFriendlyNeighbors - minFriendlyNeighbors) * weights.k_friendly_neighbors;
+    evaluation += (maxEnemyNeighbors - minEnemyNeighbors) * weights.k_enemy_neighbors;
+    
+    // 4. Piece-Specific Strategic Bonuses
+    
+    // Ant mobility bonus (ants are extremely valuable when mobile)
+    evaluation += (maxPieces[(int)BugType::SoldierAnt].mobility - minPieces[(int)BugType::SoldierAnt].mobility) * weights.k_ant_mobility;
+    
+    // Beetle coverage bonus (beetles on top of enemy pieces)
+    evaluation += (maxPieces[(int)BugType::Beetle].enemyNeighbors - minPieces[(int)BugType::Beetle].enemyNeighbors) * weights.k_beetle_coverage;
+    
+    // Spider positioning (spiders with good neighbor count)
+    evaluation += (maxPieces[(int)BugType::Spider].friendlyNeighbors - minPieces[(int)BugType::Spider].friendlyNeighbors) * weights.k_spider_positioning;
+    
+    // Total mobility (similar to original weights.k_nm)
+    int maxTotalMoves = maxNoisyMoves + maxQuietMoves;
+    int minTotalMoves = minNoisyMoves + minQuietMoves;
+    evaluation += (maxTotalMoves - minTotalMoves) * weights.k_nm;
+    
     return evaluation;
 }
