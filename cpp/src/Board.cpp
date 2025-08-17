@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <queue>
 #include <sstream>
+#include <unordered_map>
+#include <algorithm>
 
 #include "Board.h"
 
@@ -799,7 +801,7 @@ void Board::TrustedPlay(Move const &move)
     m_lastPieceMoved = move.PieceName;
 
     ResetState();
-    ResetCaches();
+    ResetCaches(); // This will invalidate articulation points cache
 }
 
 bool Board::PlacingPieceInOrder(PieceName const &pieceName)
@@ -918,89 +920,280 @@ bool Board::PieceIsOnTop(PieceName const &pieceName)
     return PieceInPlay(pieceName) && !HasPieceAt(GetPosition(pieceName), Direction::Above);
 }
 
+void Board::UpdateArticulationPoints() const
+{
+    if (m_articulationPositionsReady)
+    {
+        return;
+    }
+
+    m_articulationPositions.clear();
+
+    // Get all positions with pieces (only at stack level 0 for connectivity)
+    std::unordered_set<Position, PositionHashWrapper> graph;
+    for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++)
+    {
+        Position pos = m_piecePositions[pn];
+        if (pos.Stack == 0)  // Only consider bottom-level pieces for hive connectivity
+        {
+            graph.insert(pos);
+        }
+    }
+
+    if (graph.size() <= 2)
+    {
+        // Cannot have articulation points with 2 or fewer nodes
+        m_articulationPositionsReady = true;
+        return;
+    }
+
+    // Tarjan's algorithm for finding articulation points
+    std::unordered_map<Position, int, PositionHashWrapper> discovery;
+    std::unordered_map<Position, int, PositionHashWrapper> low;
+    std::unordered_map<Position, Position, PositionHashWrapper> parent;
+    std::unordered_set<Position, PositionHashWrapper> visited;
+    int timer = 0;
+
+    // Lambda function for DFS
+    std::function<void(Position)> dfs = [&](Position u) {
+        visited.insert(u);
+        discovery[u] = low[u] = timer++;
+        int children = 0;
+
+        // Check all 6 directions for neighbors
+        for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
+        {
+            Position v = u.GetNeighborAt((Direction)dir);
+            
+            if (graph.find(v) == graph.end())
+            {
+                continue; // Skip if not in graph
+            }
+
+            if (visited.find(v) == visited.end())
+            {
+                children++;
+                parent[v] = u;
+                dfs(v);
+
+                // Update low value
+                low[u] = std::min(low[u], low[v]);
+
+                // Root node is articulation point if it has more than one child
+                if (parent.find(u) == parent.end() && children > 1)
+                {
+                    m_articulationPositions.insert(u);
+                }
+
+                // Non-root node is articulation point if low[v] >= discovery[u]
+                if (parent.find(u) != parent.end() && low[v] >= discovery[u])
+                {
+                    m_articulationPositions.insert(u);
+                }
+            }
+            else if (v != parent[u])
+            {
+                // Back edge
+                low[u] = std::min(low[u], discovery[v]);
+            }
+        }
+    };
+
+    // Start DFS from any node in the graph
+    if (!graph.empty())
+    {
+        dfs(*graph.begin());
+    }
+
+    m_articulationPositionsReady = true;
+}
+
+// bool Board::CanMoveWithoutBreakingHive(PieceName const &pieceName)
+// {
+//     auto position = GetPosition(pieceName);
+//     if (position.Stack == 0)
+//     {
+//         // Temporarily remove piece from board
+//         SetPosition(pieceName, NullPosition);
+
+//         // Determine if the hive is broken
+//         bool isOneHive = IsOneHive();
+
+//         // Return piece to the board
+//         SetPosition(pieceName, position);
+
+//         return isOneHive;
+//     }
+//     return true;
+// }
+
 bool Board::CanMoveWithoutBreakingHive(PieceName const &pieceName)
 {
     auto position = GetPosition(pieceName);
     if (position.Stack == 0)
     {
-        // Temporarily remove piece from board
-        SetPosition(pieceName, NullPosition);
-
-        // Determine if the hive is broken
-        bool isOneHive = IsOneHive();
-
-        // Return piece to the board
-        SetPosition(pieceName, position);
-
-        return isOneHive;
+        // Update articulation points if needed
+        UpdateArticulationPoints();
+        
+        // If this position is an articulation point, removing the piece would break the hive
+        return m_articulationPositions.find(position) == m_articulationPositions.end();
     }
-    return true;
+    return true; // Pieces above stack level 0 can always move without breaking hive connectivity
 }
 
+// bool Board::IsOneHive()
+// {
+//     bool partOfHive[(int)PieceName::NumPieceNames] = {};
+//     int piecesVisited = 0;
+
+//     // Find a piece on the board to start checking
+//     auto startingPiece = PieceName::INVALID;
+//     for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++)
+//     {
+//         if (PieceInHand((PieceName)pn))
+//         {
+//             partOfHive[pn] = true;
+//             piecesVisited++;
+//         }
+//         else
+//         {
+//             partOfHive[pn] = false;
+//             if (startingPiece == PieceName::INVALID && GetPosition((PieceName)pn).Stack == 0)
+//             {
+//                 // Save off a starting piece on the bottom
+//                 startingPiece = (PieceName)pn;
+//                 partOfHive[pn] = true;
+//                 piecesVisited++;
+//             }
+//         }
+//     }
+
+//     // There is at least one piece on the board
+//     if (startingPiece != PieceName::INVALID && piecesVisited < (int)PieceName::NumPieceNames)
+//     {
+//         std::queue<PieceName> piecesToLookAt;
+//         piecesToLookAt.push(startingPiece);
+
+//         while (piecesToLookAt.size() > 0)
+//         {
+//             auto currentPiece = piecesToLookAt.front();
+//             piecesToLookAt.pop();
+
+//             auto currentPosition = GetPosition(currentPiece);
+
+//             // Check all pieces at this stack level
+//             for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
+//             {
+//                 auto neighborPiece = GetPieceAt(currentPosition, (Direction)dir);
+//                 if (neighborPiece != PieceName::INVALID && !partOfHive[(int)neighborPiece])
+//                 {
+//                     piecesToLookAt.push(neighborPiece);
+//                     partOfHive[(int)neighborPiece] = true;
+//                     piecesVisited++;
+//                 }
+//             }
+
+//             // Check for all pieces above this one
+//             auto pieceAbove = GetPieceAt(currentPosition, Direction::Above);
+//             while (PieceName::INVALID != pieceAbove)
+//             {
+//                 partOfHive[(int)pieceAbove] = true;
+//                 piecesVisited++;
+//                 pieceAbove = GetPieceAt(GetPosition(pieceAbove), Direction::Above);
+//             }
+//         }
+//     }
+
+//     return piecesVisited == (int)PieceName::NumPieceNames;
+// }
+
+// Optimized IsOneHive using the same connectivity approach but more efficient
 bool Board::IsOneHive()
 {
-    bool partOfHive[(int)PieceName::NumPieceNames] = {};
-    int piecesVisited = 0;
-
-    // Find a piece on the board to start checking
-    auto startingPiece = PieceName::INVALID;
+    std::unordered_set<Position, PositionHashWrapper> visited;
+    std::queue<Position> toVisit;
+    
+    // Find all positions with pieces at stack level 0
+    std::unordered_set<Position, PositionHashWrapper> allPositions;
+    int totalPieces = 0;
+    
     for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++)
     {
         if (PieceInHand((PieceName)pn))
         {
-            partOfHive[pn] = true;
-            piecesVisited++;
+            totalPieces++; // Count pieces in hand as "connected"
         }
         else
         {
-            partOfHive[pn] = false;
-            if (startingPiece == PieceName::INVALID && GetPosition((PieceName)pn).Stack == 0)
+            Position pos = m_piecePositions[pn];
+            if (pos.Stack >= 0)
             {
-                // Save off a starting piece on the bottom
-                startingPiece = (PieceName)pn;
-                partOfHive[pn] = true;
-                piecesVisited++;
-            }
-        }
-    }
-
-    // There is at least one piece on the board
-    if (startingPiece != PieceName::INVALID && piecesVisited < (int)PieceName::NumPieceNames)
-    {
-        std::queue<PieceName> piecesToLookAt;
-        piecesToLookAt.push(startingPiece);
-
-        while (piecesToLookAt.size() > 0)
-        {
-            auto currentPiece = piecesToLookAt.front();
-            piecesToLookAt.pop();
-
-            auto currentPosition = GetPosition(currentPiece);
-
-            // Check all pieces at this stack level
-            for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
-            {
-                auto neighborPiece = GetPieceAt(currentPosition, (Direction)dir);
-                if (neighborPiece != PieceName::INVALID && !partOfHive[(int)neighborPiece])
+                totalPieces++;
+                if (pos.Stack == 0)
                 {
-                    piecesToLookAt.push(neighborPiece);
-                    partOfHive[(int)neighborPiece] = true;
-                    piecesVisited++;
+                    allPositions.insert(pos);
                 }
             }
-
-            // Check for all pieces above this one
-            auto pieceAbove = GetPieceAt(currentPosition, Direction::Above);
-            while (PieceName::INVALID != pieceAbove)
+        }
+    }
+    
+    if (allPositions.empty())
+    {
+        return totalPieces == (int)PieceName::NumPieceNames; // All pieces in hand
+    }
+    
+    // Start BFS from any position
+    Position start = *allPositions.begin();
+    toVisit.push(start);
+    visited.insert(start);
+    
+    while (!toVisit.empty())
+    {
+        Position current = toVisit.front();
+        toVisit.pop();
+        
+        // Check all 6 directions
+        for (int dir = 0; dir < (int)Direction::NumDirections; dir++)
+        {
+            Position neighbor = current.GetNeighborAt((Direction)dir);
+            
+            if (allPositions.find(neighbor) != allPositions.end() && 
+                visited.find(neighbor) == visited.end())
             {
-                partOfHive[(int)pieceAbove] = true;
-                piecesVisited++;
-                pieceAbove = GetPieceAt(GetPosition(pieceAbove), Direction::Above);
+                visited.insert(neighbor);
+                toVisit.push(neighbor);
             }
         }
     }
-
-    return piecesVisited == (int)PieceName::NumPieceNames;
+    
+    // Count all pieces at visited positions (including stacked pieces)
+    int connectedPieces = 0;
+    for (const Position& pos : visited)
+    {
+        // Count all pieces stacked at this position
+        for (int stack = 0; stack < BoardStackSize; stack++)
+        {
+            if (GetPieceAt(Position{pos.Q, pos.R, stack}) != PieceName::INVALID)
+            {
+                connectedPieces++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    
+    // Add pieces in hand
+    for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++)
+    {
+        if (PieceInHand((PieceName)pn))
+        {
+            connectedPieces++;
+        }
+    }
+    
+    return connectedPieces == totalPieces;
 }
 
 int Board::CountNeighbors(PieceName const &pieceName)
@@ -1050,6 +1243,8 @@ void Board::ResetCaches()
 {
     m_cachedValidPlacementsReady = false;
     m_cachedValidPlacements.clear();
+    m_articulationPositionsReady = false;
+    m_articulationPositions.clear();
 }
 
 std::vector<std::pair<PieceName, Position>> MzingaCpp::Board::GetPiecesAndPositions() 

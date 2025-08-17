@@ -7,6 +7,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <functional>
 
 #include "Constants.h"
 #include "Enums.h"
@@ -17,6 +20,14 @@
 
 namespace MzingaCpp
 {
+// Hash wrapper for Position to use in unordered containers
+struct PositionHashWrapper {
+    size_t operator()(Position const &p) const noexcept
+    {
+        return MzingaCpp::hash(p);
+    }
+};
+
 class Board
 {
   public:
@@ -38,11 +49,18 @@ class Board
 
     std::shared_ptr<Board> Clone();
     
-    int CountNeighbors(PieceName const &pieceName); // originally was private
+    int CountNeighbors(PieceName const &pieceName);
 
-    std::vector<std::pair<PieceName, Position>> GetPiecesAndPositions(); // uses the private function m_piecePositions
+    std::vector<std::pair<PieceName, Position>> GetPiecesAndPositions();
 
   private:
+    // Articulation points (cut vertices) cache
+    mutable bool m_articulationPositionsReady = false;
+    mutable std::unordered_set<Position, PositionHashWrapper> m_articulationPositions;
+
+    // Updates articulation points using Tarjan's algorithm
+    void UpdateArticulationPoints() const;
+    
     void GetValidMoves(PieceName const &pieceName, std::shared_ptr<MoveSet> moveSet);
     void CalculateValidPlacements();
 
@@ -81,10 +99,9 @@ class Board
 
     bool PieceIsOnTop(PieceName const &pieceName);
 
+    // Improved hive connectivity checking
     bool CanMoveWithoutBreakingHive(PieceName const &pieceName);
-
     bool IsOneHive();
-
 
     void ResetState();
     void ResetCaches();
