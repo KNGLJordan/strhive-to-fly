@@ -43,39 +43,44 @@ struct EvaluationWeights {
     float k_beetle_coverage = 0.8f;    // Beetles covering pieces is good
     float k_spider_positioning = 0.6f; // Spiders in good positions
 };
+
+enum class Flag { EXACT, LOWER_BOUND, UPPER_BOUND };
+
+struct TTEntry {
+    float value;          
+    std::string bestMove; 
+    int depth;            
+    Flag flag;            
+};   
+
 class MinMaxZobrist 
 {
     public:
-    MinMaxZobrist(bool useEnhancedEval = false);
-    MinMaxZobrist(const EvaluationWeights& weights, bool useEnhancedEval = true);
-    MinMaxZobrist(std::vector<float> weights, bool useEnhancedEval = false);
-    
-    std::string calculateBestMove(Board& board, int maxDepth = 3, int timeLimit = 0);
+        MinMaxZobrist(bool useEnhancedEval = false);
+        MinMaxZobrist(const EvaluationWeights& weights, bool useEnhancedEval = true);
+        MinMaxZobrist(std::vector<float> weights, bool useEnhancedEval = false);
+        
+        virtual std::string calculateBestMove(Board& board, int maxDepth = 3, int timeLimit = 0);
 
-    private:
-        enum class Flag { EXACT, LOWER_BOUND, UPPER_BOUND };
+        
+        bool useEnhanced = false;
+        ZobristHasher zobristHasher;  
+        std::unordered_map<uint64_t, TTEntry> transpositionTable;
+        EvaluationWeights weights;
+        float evaluate(Board& board, int playerColor);
+        float evaluate2(Board& board, int playerColor);
 
-        struct TTEntry {
-            float value;          
-            std::string bestMove; 
-            int depth;            
-            Flag flag;            
-        };      
+    private:   
 
         // float k_qn, k_mq, k_ms, k_mb, k_ma, k_mg, k_mm, k_ml, k_mp, k_nm;
         // float k_pieces_in_play, k_pieces_in_hand, k_pinned_pieces, k_covered_pieces;
         // float k_noisy_moves, k_quiet_moves, k_friendly_neighbors, k_enemy_neighbors;
         // float k_queen_safety, k_ant_mobility, k_beetle_coverage, k_spider_positioning;
-        bool useEnhanced = false;
-        
-        ZobristHasher zobristHasher;  
-        std::unordered_map<uint64_t, TTEntry> transpositionTable;
-        EvaluationWeights weights;
+
         
         std::pair<float, std::string> negamax(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp);
         std::pair<float, std::string> negamaxStats(Board board, int playerColor, float alpha, float beta, int maxDepth, std::atomic<bool>& timeUp, std::atomic<int>& nodeCounter);
-        float evaluate(Board& board, int playerColor);
-        float evaluate2(Board& board, int playerColor);
+
 };
 } // namespace MzingaCpp
 

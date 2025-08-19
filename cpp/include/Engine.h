@@ -12,6 +12,7 @@
 #include "Board.h"
 #include "MinMaxZobrist.h"
 #include "Engine.h"
+#include "lazysmp.h"
 
 namespace MzingaCpp
 {
@@ -31,6 +32,7 @@ class Engine
 
   private:
     MinMaxZobrist minmaxZobrist; // Oggetto MinMaxZobrist persistente per il calcolo della mossa migliore
+    MinMaxLocklessLazySMP lazysmp;
 
     void WriteLine(std::string line);
     void WriteError(std::string message);

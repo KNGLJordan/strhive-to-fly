@@ -15,6 +15,9 @@ using namespace MzingaCpp;
 
 #define CurrentTurnQueenInPlay PieceInPlay(m_currentColor == Color::White ? PieceName::wQ : PieceName::bQ)
 
+
+Board::Board() : Board(GameType::BaseMLP) {}
+
 Board::Board(GameType gameType) : m_gameType(gameType)
 {
     for (int pn = 0; pn < (int)PieceName::NumPieceNames; pn++)
@@ -44,12 +47,12 @@ int Board::GetCurrentTurn()
     return m_currentTurn;
 }
 
-GameType Board::GetGameType()
+GameType Board::GetGameType() const
 {
     return m_gameType;
 }
 
-std::string Board::GetGameString()
+std::string Board::GetGameString() const
 {
     std::ostringstream str;
 

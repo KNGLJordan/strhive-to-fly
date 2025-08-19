@@ -63,13 +63,15 @@ struct BoardMetrics
 class Board
 {
   public:
+  
+    Board();
     Board(GameType gameType);
 
     BoardState GetBoardState();
     int GetCurrentTurn();
-    GameType GetGameType();
+    GameType GetGameType() const;
 
-    std::string GetGameString();
+    std::string GetGameString() const;
     std::shared_ptr<MoveSet> GetValidMoves();
 
     bool TryPlayMove(Move const &move, std::string moveString);

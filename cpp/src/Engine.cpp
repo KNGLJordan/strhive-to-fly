@@ -13,7 +13,9 @@ using namespace MzingaCpp;
 
 Engine::Engine(std::function<void(std::string)> writeLine) : 
     m_writeLine{writeLine}, 
-    minmaxZobrist(false)
+    // minmaxZobrist(false),
+    lazysmp(false)
+
 
     // // Opzione 1: Tutto default, evaluate classica
     // minmaxZobrist(false)
@@ -161,6 +163,7 @@ void Engine::NewGame(std::string args)
                         return;
                     }
                     m_board = std::make_shared<Board>(gameType);
+                    lazysmp.initializeBoards(gameType);
                 }
                 if (itemIndex > 2)
                 {
@@ -172,6 +175,8 @@ void Engine::NewGame(std::string args)
                         WriteError(ErrorMessage_Unknown);
                         return;
                     }
+                    // update the thread's boards
+                    lazysmp.applyMoveToAllBoards(move, parsedMoveString);
                 }
 
                 itemIndex++;
@@ -307,7 +312,7 @@ void Engine::BestMove(std::string args)
     if (keyword == "depth") {
         int depth;
         if (ss >> depth) { // Converte il valore in intero
-            bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, depth, 0);  // Usa l'oggetto persistente
+            bestMoveStr = lazysmp.calculateBestMove(*m_board, depth, 0);  // Usa l'oggetto persistente
         }
     } 
     else if (keyword == "time") {
@@ -320,7 +325,7 @@ void Engine::BestMove(std::string args)
         
         if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
             int totalSeconds = h * 3600 + m * 60 + s;
-            bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, 0, totalSeconds);  // Usa l'oggetto persistente
+            bestMoveStr = lazysmp.calculateBestMove(*m_board, 0, totalSeconds);  // Usa l'oggetto persistente
         }
     }
 
@@ -347,6 +352,10 @@ void Engine::Play(std::string args)
     std::string moveString;
     if (m_board->TryParseMove(args, move, moveString) && m_board->TryPlayMove(move, moveString))
     {
+        
+        // update the thread's boards
+        lazysmp.applyMoveToAllBoards(move, moveString);
+
         WriteLine(m_board->GetGameString());
     }
     else
@@ -389,6 +398,9 @@ void Engine::Undo(std::string args)
     {
         m_board->TryUndoLastMove();
     }
+
+    // update the thread's boards
+    lazysmp.applyUndoToAllBoards(movesToUndo);
 
     WriteLine(m_board->GetGameString());
     WriteLine(OkString);
