@@ -2,6 +2,7 @@
 #define LAZYSMP_H
 
 #include "MinMaxZobrist.h"
+#include "ZobristHasher.h"
 #include "lltt.h"
 #include <atomic>
 #include <thread>
@@ -13,14 +14,15 @@ namespace MzingaCpp {
 
 class MinMaxLocklessLazySMP : public MinMaxZobrist {
 private:
-    static constexpr int MAX_THREADS = 8;
-    static constexpr int DEFAULT_THREADS = 4;
+    static constexpr int MAX_THREADS = 48;
+    static constexpr int DEFAULT_THREADS = 44;
     static constexpr int MAX_SEARCH_DEPTH = 100;  // Maximum depth for iterative deepening
     
     // Thread data structure
     struct alignas(64) ThreadData {  // Cache line aligned
         int thread_id;
-        Board board;
+        Board board;    
+        ZobristHasher zobristHasher;
         std::mt19937 rng;
         
         // Search parameters for diversity

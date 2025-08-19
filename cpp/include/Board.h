@@ -93,6 +93,7 @@ class Board
     void SetCurrentPlayerMetrics(BoardMetrics& boardMetrics, std::shared_ptr<MoveSet> moveSet);
     bool IsPinned(PieceName pieceName, std::shared_ptr<MoveSet> moveSet, int& noisyCount, int& quietCount);
     int CountNeighbors(PieceName pieceName, int& friendlyCount, int& enemyCount);
+    std::vector<std::pair<Position, PieceName>> GetPiecesInPlay();
 
   private:
     // Articulation points (cut vertices) cache

@@ -872,3 +872,148 @@ float MinMaxZobrist::evaluate2(Board& board, int playerColor) {
     
     return evaluation;
 }
+float MinMaxZobrist::evaluateFast(Board& board, int playerColor) {
+    float evaluation = 0.0f;
+    
+    // Get piece positions without generating moves
+    const auto& pieces = board.GetPiecesInPlay();  // Assuming this exists
+    
+    // Count pieces and calculate positions
+    int whitePiecesInPlay = 0, blackPiecesInPlay = 0;
+    int whitePiecesInHand = 0, blackPiecesInHand = 0;
+    
+    // Queen positions and safety
+    Position whiteQueenPos, blackQueenPos;
+    bool whiteQueenInPlay = false, blackQueenInPlay = false;
+    int whiteQueenNeighbors = 0, blackQueenNeighbors = 0;
+    
+    // Piece mobility approximation (based on piece type and position)
+    float whiteMobility = 0.0f, blackMobility = 0.0f;
+    
+    // Iterate through pieces on board
+    for (const auto& [pos, piece] : pieces) {
+        Color color = GetColor(piece);
+        BugType bugType = GetBugType(piece);
+        
+        if (color == Color::White) {
+            whitePiecesInPlay++;
+            
+            if (bugType == BugType::QueenBee) {
+                whiteQueenInPlay = true;
+                whiteQueenPos = pos;
+                whiteQueenNeighbors = board.CountNeighbors(piece);
+            }
+            
+            // Approximate mobility based on piece type (without generating moves)
+            switch (bugType) {
+                case BugType::QueenBee:
+                    whiteMobility += (6 - whiteQueenNeighbors) * weights.k_mq;
+                    break;
+                case BugType::Spider:
+                    whiteMobility += 3.0f * weights.k_ms;  // Spiders typically have ~3 moves
+                    break;
+                case BugType::Beetle:
+                    whiteMobility += 4.0f * weights.k_mb;  // Beetles are flexible
+                    break;
+                case BugType::Grasshopper:
+                    whiteMobility += 2.0f * weights.k_mg;  // Grasshoppers jump
+                    break;
+                case BugType::SoldierAnt:
+                    whiteMobility += 8.0f * weights.k_ma;  // Ants are very mobile
+                    break;
+                case BugType::Mosquito:
+                    whiteMobility += 5.0f * weights.k_mm;  // Mosquitos are versatile
+                    break;
+                case BugType::Ladybug:
+                    whiteMobility += 4.0f * weights.k_ml;
+                    break;
+                case BugType::Pillbug:
+                    whiteMobility += 2.0f * weights.k_mp;
+                    break;
+            }
+        } else {
+            blackPiecesInPlay++;
+            
+            if (bugType == BugType::QueenBee) {
+                blackQueenInPlay = true;
+                blackQueenPos = pos;
+                blackQueenNeighbors = board.CountNeighbors(piece);
+            }
+            
+            // Approximate mobility for black pieces
+            switch (bugType) {
+                case BugType::QueenBee:
+                    blackMobility += (6 - blackQueenNeighbors) * weights.k_mq;
+                    break;
+                case BugType::Spider:
+                    blackMobility += 3.0f * weights.k_ms;
+                    break;
+                case BugType::Beetle:
+                    blackMobility += 4.0f * weights.k_mb;
+                    break;
+                case BugType::Grasshopper:
+                    blackMobility += 2.0f * weights.k_mg;
+                    break;
+                case BugType::SoldierAnt:
+                    blackMobility += 8.0f * weights.k_ma;
+                    break;
+                case BugType::Mosquito:
+                    blackMobility += 5.0f * weights.k_mm;
+                    break;
+                case BugType::Ladybug:
+                    blackMobility += 4.0f * weights.k_ml;
+                    break;
+                case BugType::Pillbug:
+                    blackMobility += 2.0f * weights.k_mp;
+                    break;
+            }
+        }
+    }
+    
+    // Calculate pieces in hand (assuming standard Hive piece counts)
+    whitePiecesInHand = 14 - whitePiecesInPlay;  // Adjust based on game type
+    blackPiecesInHand = 14 - blackPiecesInPlay;
+    
+    // Core evaluation components
+    if (playerColor == 1) {  // White maximizing
+        // Queen safety is CRITICAL
+        evaluation += (blackQueenNeighbors - whiteQueenNeighbors) * weights.k_qn * 2.0f;
+        
+        // Bonus for enemy queen surrounded
+        if (blackQueenNeighbors >= 5) evaluation += 100.0f;
+        if (blackQueenNeighbors == 6) evaluation += 10000.0f;  // Win!
+        
+        // Penalty for our queen surrounded
+        if (whiteQueenNeighbors >= 5) evaluation -= 100.0f;
+        if (whiteQueenNeighbors == 6) evaluation -= 10000.0f;  // Loss!
+        
+        // Mobility difference
+        evaluation += (whiteMobility - blackMobility);
+        
+        // Piece development
+        evaluation += (whitePiecesInPlay - blackPiecesInPlay) * 5.0f;
+        
+        // Queen must be played by turn 4
+        if (!whiteQueenInPlay && board.GetCurrentTurn() >= 6) {
+            evaluation -= 50.0f;
+        }
+        
+    } else {  // Black maximizing
+        evaluation += (whiteQueenNeighbors - blackQueenNeighbors) * weights.k_qn * 2.0f;
+        
+        if (whiteQueenNeighbors >= 5) evaluation += 100.0f;
+        if (whiteQueenNeighbors == 6) evaluation += 10000.0f;
+        
+        if (blackQueenNeighbors >= 5) evaluation -= 100.0f;
+        if (blackQueenNeighbors == 6) evaluation -= 10000.0f;
+        
+        evaluation += (blackMobility - whiteMobility);
+        evaluation += (blackPiecesInPlay - whitePiecesInPlay) * 5.0f;
+        
+        if (!blackQueenInPlay && board.GetCurrentTurn() >= 7) {
+            evaluation -= 50.0f;
+        }
+    }
+    
+    return evaluation;
+}

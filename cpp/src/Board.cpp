@@ -923,6 +923,23 @@ inline bool Board::PieceInPlay(PieceName const &pieceName)
     return (GetPosition(pieceName).Stack >= 0);
 }
 
+std::vector<std::pair<Position, PieceName>> Board::GetPiecesInPlay()
+{
+    std::vector<std::pair<Position, PieceName>> piecesInPlay;
+    piecesInPlay.reserve((int)PieceName::NumPieceNames);
+
+    for (int i = 0; i < (int)PieceName::NumPieceNames; ++i)
+    {
+        Position pos = m_piecePositions[i];
+        if (pos.Stack >= 0)
+        {
+            piecesInPlay.emplace_back(pos, static_cast<PieceName>(i));
+        }
+    }
+    piecesInPlay.shrink_to_fit();
+    return piecesInPlay;
+}
+
 bool Board::PieceIsOnTop(PieceName const &pieceName)
 {
     return PieceInPlay(pieceName) && !HasPieceAt(GetPosition(pieceName), Direction::Above);

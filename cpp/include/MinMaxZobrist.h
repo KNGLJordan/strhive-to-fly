@@ -59,7 +59,7 @@ class MinMaxZobrist
         MinMaxZobrist(bool useEnhancedEval = false);
         MinMaxZobrist(const EvaluationWeights& weights, bool useEnhancedEval = true);
         MinMaxZobrist(std::vector<float> weights, bool useEnhancedEval = false);
-        
+        float evaluateFast(Board& board, int playerColor) ;
         virtual std::string calculateBestMove(Board& board, int maxDepth = 3, int timeLimit = 0);
 
         
