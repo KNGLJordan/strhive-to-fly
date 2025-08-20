@@ -6,53 +6,34 @@
 #include <unordered_map>
 #include <random>
 #include <utility>
-
 namespace MzingaCpp {
 
-// Specializzazione dell'hash per PieceName
-struct PieceNameHasher {
-    size_t operator()(PieceName piece) const {
-        return std::hash<int>{}(static_cast<int>(piece));  // Usa un cast per ottenere un intero da PieceName
-    }
-};
+// mixing veloce e di qualità
+static inline uint64_t splitmix64(uint64_t x) noexcept {
+    x += 0x9E3779B97F4A7C15ull;
+    x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ull;
+    x = (x ^ (x >> 27)) * 0x94D049BB133111EBull;
+    return x ^ (x >> 31);
+}
 
-// Functor per l'hash delle posizioni
-struct ZobristPositionHasher {
-    size_t operator()(const Position& pos) const {
-        size_t h1 = std::hash<int>{}(pos.Q);
-        size_t h2 = std::hash<int>{}(pos.R);
-        size_t h3 = std::hash<int>{}(pos.Stack);
-        return h1 ^ (h2 << 1) ^ (h3 << 2);  // Combina gli hash dei componenti Q, R e Stack
-    }
-};
-
-// Functor per l'hash della coppia PieceName e Position
-struct PairHasher {
-    size_t operator()(const std::pair<PieceName, Position>& p) const {
-        size_t h1 = PieceNameHasher{}(p.first);
-        size_t h2 = ZobristPositionHasher{}(p.second);
-        return h1 ^ (h2 << 1);  // Combina gli hash di PieceName e Position
-    }
-};
+// zig-zag per coordinate negative
+static inline uint64_t zz(int v) noexcept {
+    return (static_cast<uint32_t>(v) << 1) ^ static_cast<uint32_t>(v >> 31);
+}
 
 class ZobristHasher {
 public:
-    ZobristHasher();  // Costruttore
+    uint64_t computeHash( Board& board) ;
 
-    // Funzione per ottenere o generare un valore Zobrist per una coppia (pezzo, posizione)
-    uint64_t getOrGenerateHash(PieceName piece, Position pos);
-
-    // Calcola l'hash iniziale della board
-    uint64_t computeHash(Board& board);
-
-    // Aggiorna l'hash quando un pezzo si muove
-    uint64_t updateHash(uint64_t currentHash, PieceName piece, Position oldPos, Position newPos);
+    uint64_t updateHash(uint64_t h, PieceName piece, Position oldPos, Position newPos) const;
 
 private:
-    // Tabella Zobrist che mappa la coppia (PieceName, Position) a un valore hash
-    std::unordered_map<std::pair<PieceName, Position>, uint64_t, PairHasher> zobristTable;
+    static constexpr uint64_t SEED = 0x123456789ABCDEF0ull;
+
+    static inline uint64_t zobristValue(PieceName p, const Position& pos) noexcept;
 };
 
 } // namespace MzingaCpp
+
 
 #endif // ZOBRISTHASHER_H

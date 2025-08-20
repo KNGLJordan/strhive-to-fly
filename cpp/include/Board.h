@@ -74,6 +74,8 @@ class Board
     std::string GetGameString() const;
     std::shared_ptr<MoveSet> GetValidMoves();
 
+    
+    void FastPlay(Move const &move, std::string moveString);
     bool TryPlayMove(Move const &move, std::string moveString);
     bool TryUndoLastMove();
 

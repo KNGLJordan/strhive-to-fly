@@ -89,6 +89,13 @@ std::shared_ptr<MoveSet> Board::GetValidMoves()
     return validMoves;
 }
 
+void Board::FastPlay(Move const &move, std::string moveString)
+{
+    m_moveHistoryStr.push_back(moveString);
+
+    TrustedPlay(move);
+}
+
 bool Board::TryPlayMove(Move const &move, std::string moveString)
 {
     auto validMoves = GetValidMoves();

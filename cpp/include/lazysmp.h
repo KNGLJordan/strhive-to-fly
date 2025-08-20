@@ -49,7 +49,6 @@ private:
     };
     
     // Shared resources
-    LocklessTranspositionTable tt;
     std::vector<std::unique_ptr<ThreadData>> thread_data;
     int num_threads;
     
@@ -69,13 +68,14 @@ private:
     std::atomic<int> time_limit_ms{0};
     
 public:
+    LocklessTranspositionTable tt;
     MinMaxLocklessLazySMP(bool useEnhancedEval, int threads = DEFAULT_THREADS);
     MinMaxLocklessLazySMP(const EvaluationWeights& w, bool useEnhancedEval, int threads = DEFAULT_THREADS);
     ~MinMaxLocklessLazySMP();
     
     // Board management
     void initializeBoards(GameType gameType);
-    void syncBoards(const Board& board);
+    void syncBoards(Board& board);
     void applyMoveToAllBoards(const Move& move, const std::string& moveStr);
     void applyUndoToAllBoards(int numMoves = 1);
     

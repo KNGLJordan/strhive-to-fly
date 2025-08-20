@@ -92,7 +92,8 @@ void MinMaxLocklessLazySMP::ThreadData::updateBestMove(float score, const std::s
     float current = best_score.load(std::memory_order_relaxed);
     int current_depth = completed_depth.load(std::memory_order_relaxed);
     
-    if (depth > current_depth || (depth == current_depth && score > current)) {
+    if (depth >= current_depth && score > current) {
+    // if (depth > current_depth || (depth == current_depth && score > current)) {
         best_score.store(score, std::memory_order_relaxed);
         completed_depth.store(depth, std::memory_order_relaxed);
         
@@ -142,15 +143,24 @@ void MinMaxLocklessLazySMP::initializeBoards(GameType gameType) {
     }
 }
 
-void MinMaxLocklessLazySMP::syncBoards(const Board& board) {
+void MinMaxLocklessLazySMP::syncBoards(Board& board) {
+    // for (auto& td : thread_data) {
+    //     td->board = board;
+    // }
+    // check gamestr equal for each board
+    auto gamestring = board.GetGameString();
+    std::cout << "Syncing boards with game string: " << gamestring << std::endl;
     for (auto& td : thread_data) {
-        td->board = board;
+        auto tstr = td->board.GetGameString();
+        if (tstr != gamestring) {
+            std::cout << "[Thread " << td->thread_id << "] " << tstr << std::endl;
+        }
     }
 }
 
 void MinMaxLocklessLazySMP::applyMoveToAllBoards(const Move& move, const std::string& moveStr) {
     for (auto& td : thread_data) {
-        td->board.TryPlayMove(move, moveStr);
+        td->board.FastPlay(move, moveStr);
     }
 }
 
@@ -223,11 +233,26 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
             best_depth = depth;
         }
     }
-    
+    return best_move;
+    // float best_score = -std::numeric_limits<float>::infinity();
+    // int   best_depth = -1;
+    // std::string best_move;
+    // auto isWin = [](float s){ return s >= 9999.0f; }; // tua convenzione ~10000
+
+    // for (int t = 0; t < num_threads; ++t) {
+    //     float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+    //     int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+    //     if (isWin(s) && !isWin(best_score)) {            // vittoria batte tutto
+    //         best_score = s; best_depth = d; best_move = thread_data[t]->getBestMove();
+    //     } else if (s > best_score || (s == best_score && d > best_depth)) {
+    //         best_score = s; best_depth = d; best_move = thread_data[t]->getBestMove();
+    //     }
+    // }
+
     // #ifdef DEBUG_LAZY_SMP
     // std::cout << "\n=== Lazy SMP Search Complete ===\n";
     // std::cout << "Mode: " << (timeLimit > 0 ? "Time-limited" : "Depth-limited") << "\n";
-    // std::cout << "Best thread: " << best_thread << " (depth " << best_depth << ", score " << best_score << ")\n";
+    // // std::cout << "Best thread: " << best_thread << " (depth " << best_depth << ", score " << best_score << ")\n";
     // std::cout << "TT usage: ~" << tt.approximateUsage() << " entries\n\n";
     
     // // Show top threads
@@ -235,14 +260,80 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
     // for (int t = 0; t < num_threads; ++t) {
     //     std::cout << "  Thread " << t 
     //               << ": depth=" << thread_data[t]->completed_depth.load()
+    //               << ", score=" << thread_data[t]->best_score.load()
+    //               << ", best_move='" << thread_data[t]->getBestMove() << "'"  
     //               << ", nodes=" << thread_data[t]->nodes_searched.load()
     //               << ", tt_hits=" << thread_data[t]->tb_hits.load()
     //               << ", cutoffs=" << thread_data[t]->beta_cutoffs.load() << "\n";
     // }
     // std::cout << "\n";
     // #endif
+
+
+    // const float MATE_BOUND = 9999.0f;             // tua convenzione
+    // const float IMPROVE_MARGIN = 20.0f;           // opzionale stabilità
+
+    // int main_id = 0;
+    // float main_score = thread_data[main_id]->best_score.load(std::memory_order_relaxed);
+    // int   main_depth = thread_data[main_id]->completed_depth.load(std::memory_order_relaxed);
+    // std::string main_move = thread_data[main_id]->getBestMove();
+
+    // //1) se qualunque thread ha una vittoria, prendi quella
+    // int best_win_tid = -1;
+    // float best_win_score = -std::numeric_limits<float>::infinity();
+    // for (int t = 0; t < num_threads; ++t) {
+    //     float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+    //     if (s >= MATE_BOUND && s > best_win_score) {
+    //         best_win_score = s;
+    //         best_win_tid = t;
+    //     }
+    // }
+    // if (best_win_tid != -1) {
+    //     // std::cout << "[1] Found winning move in thread " << best_win_tid << ": "
+    //     //           << thread_data[best_win_tid]->getBestMove() << " (score: "
+    //     //           << best_win_score << ")\n";
+    //     return thread_data[best_win_tid]->getBestMove();
+    // }
+
+    // // 2) se il main ha una mossa valida, di default usiamo quella
+    // if (!main_move.empty()) {
+    //     // opzionale: se un helper è chiaramente migliore allo stesso/≥ depth, prendi lui
+    //     int pick = main_id;
+    //     for (int t = 1; t < num_threads; ++t) {
+    //         float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+    //         int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+    //         if (!thread_data[t]->getBestMove().empty()) {
+    //             bool clearly_better = (s > main_score + IMPROVE_MARGIN) && (d >= main_depth);
+    //             if (clearly_better) { pick = t; main_score = s; main_depth = d; }
+    //         }
+    //     }
+    //     // std::cout << "[2] Main thread best move: " << main_move 
+    //     //           << " (score: " << main_score << ", depth: " << main_depth << ")\n";
+    //     return thread_data[pick]->getBestMove();
+    // }
+
+    // // 3) fallback: il main non ha ancora scritto nulla → scegli il migliore globale
+    // float best_s = -std::numeric_limits<float>::infinity();
+    // int best_t = -1;
+    // int best_d = -1;
+    // for (int t = 0; t < num_threads; ++t) {
+    //     float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+    //     int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+    //     if (!thread_data[t]->getBestMove().empty() &&
+    //         (s > best_s || (s == best_s && d > best_d))) {
+    //         best_s = s; best_d = d; best_t = t;
+    //     }
+    // }
+    // // if (best_t != -1) {
+    // //     std::cout << "[3] Best move from any thread: " << thread_data[best_t]->getBestMove() 
+    // //               << " (score: " << best_s << ", depth: " << best_d << ")\n";
+    // // } else {
+    // //     std::cout << "[3] No valid moves found in any thread.\n";
+    // // }
+    // return (best_t != -1) ? thread_data[best_t]->getBestMove() : std::string{};
     
-    return best_move;
+    // return best_move;
+
 }
 
 void MinMaxLocklessLazySMP::startWorkerThreads() {
@@ -368,7 +459,7 @@ void MinMaxLocklessLazySMP::searchThreadTimeLimited(ThreadData& td) {
         }
         
         // Early exit if we found a winning move
-        if (std::abs(score) > 10000.0f) {
+        if (std::abs(score) >= 10000.0f) {
             break;
         }
 
@@ -394,144 +485,6 @@ bool MinMaxLocklessLazySMP::shouldStop() const {
     }
     return false;
 }
-
-// std::pair<float, std::string> MinMaxLocklessLazySMP::locklessNegamax(
-//     ThreadData& td,
-//     Board& board,
-//     int playerColor,
-//     float alpha,
-//     float beta,
-//     int depth
-// ) {
-//     td.nodes_searched.fetch_add(1, std::memory_order_relaxed);
-    
-//     // Check time limit for time-based searches
-//     if (shouldStop()) {
-//         return {0, ""};
-//     }    
-
-//     // uint64_t hash = zobristHasher.computeHash(board); 
-//     uint64_t hash = td.zobristHasher.computeHash(td.board);
-
-//     float tt_value;
-//     std::string tt_move;
-//     int tt_depth;
-//     Flag tt_flag;
-
-//     bool tt_hit = tt.probe(hash, tt_value, tt_move, tt_depth, tt_flag);
-
-//     if (tt_hit) {
-//         td.tb_hits.fetch_add(1, std::memory_order_relaxed);
-//         if (tt_depth >= depth) {
-//             if (tt_flag == Flag::EXACT) {
-//                 return {tt_value, tt_move};
-//             } else if (tt_flag == Flag::LOWER_BOUND && tt_value >= beta) {
-//                 return {tt_value, tt_move};
-//             } else if (tt_flag == Flag::UPPER_BOUND && tt_value <= alpha) {
-//                 return {tt_value, tt_move};
-//             }
-//         }
-//     }
-
-//     BoardState state = board.GetBoardState();
-//     if (state == BoardState::WhiteWins) {
-//         float inf = std::numeric_limits<float>::infinity();
-//         return (playerColor == 1) ? std::make_pair(inf, "") : std::make_pair(-inf, "");
-//     } else if (state == BoardState::BlackWins) {
-//         float inf = std::numeric_limits<float>::infinity();
-//         return (playerColor == -1) ? std::make_pair(inf, "") : std::make_pair(-inf, "");
-//     } else if (state == BoardState::Draw) {
-//         return {0.0f, ""};
-//     }
-
-//     if (depth == 0) {
-//         float eval = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
-//         tt.store(hash, eval, "", 0, Flag::EXACT);
-//         return {eval, ""};
-//     }
-
-//     struct MoveEntry {
-//         Move m;
-//         std::string str;
-//         float score;
-//         float noise;
-//     };
-
-//     std::vector<MoveEntry> movelist;
-//     auto validMovesPtr = board.GetValidMoves();
-
-//     if (!validMovesPtr || validMovesPtr->empty()) {
-//         return {0.0f, ""};
-//     }
-
-//     movelist.reserve(validMovesPtr->size());
-
-//     for (const auto& move : *validMovesPtr) {
-//         std::string moveStr;
-//         if (!board.TryGetMoveString(move, moveStr)) continue;
-//         if (board.TryPlayMove(move, moveStr)) {
-//             float staticScore = useEnhanced ? evaluate2(board, playerColor) : evaluate(board, playerColor);
-//             board.TryUndoLastMove();
-//             if (tt_hit && moveStr == tt_move) {
-//                 staticScore += 10000.0f;
-//             }
-//             movelist.push_back({move, moveStr, staticScore, 0.0f});
-//         }
-//     }
-
-//     if (movelist.empty()) {
-//         return {0.0f, ""};
-//     }
-
-//     // std::sort(movelist.begin(), movelist.end(),
-//     //     [&td](const MoveEntry& a, const MoveEntry& b) {
-//     //         if (td.thread_id == 0) {
-//     //             return a.score > b.score;
-//     //         }
-//     //         float noise = std::uniform_real_distribution<float>(-0.5f, 0.5f)(td.rng);
-//     //         return (a.score + noise) > b.score;
-//     //     }
-//     // );
-//     // Add per-move jitter once (non–main threads only), then sort deterministically.
-//     if (td.thread_id != 0) {
-//         std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
-//         for (auto& e : movelist) {
-//             e.noise = dist(td.rng);
-//         }
-//     }
-//     std::sort(movelist.begin(), movelist.end(),
-//         [](const MoveEntry& a, const MoveEntry& b) {
-//             return (a.score + a.noise) > (b.score + b.noise);
-//         });
-
-//     float originalAlpha = alpha;
-//     float value = -std::numeric_limits<float>::infinity();
-//     std::string bestMove = "";
-
-//     for (const auto& entry : movelist) {
-//         if (time_limit_reached.load(std::memory_order_relaxed)) break;
-//         if (board.TryPlayMove(entry.m, entry.str)) {
-//             auto [childScore, _] = locklessNegamax(
-//                 td, board, -playerColor, -beta, -alpha, depth - 1
-//             );
-//             float score = -childScore;
-//             board.TryUndoLastMove();
-//             if (score > value) {
-//                 value = score;
-//                 bestMove = entry.str;
-//             }
-//             alpha = std::max(alpha, value);
-//             if (alpha >= beta) break;
-//         }
-//     }
-
-//     Flag flag = (value <= originalAlpha) ? Flag::UPPER_BOUND :
-//                 (value >= beta) ? Flag::LOWER_BOUND : Flag::EXACT;
-
-//     tt.store(hash, value, bestMove, depth, flag);
-
-//     return {value, bestMove};
-// }
 
 std::pair<float, std::string> MinMaxLocklessLazySMP::locklessNegamax(
     ThreadData& td,
@@ -572,10 +525,12 @@ std::pair<float, std::string> MinMaxLocklessLazySMP::locklessNegamax(
     // Terminal states
     BoardState state = board.GetBoardState();
     if (state == BoardState::WhiteWins) {
-        float value = (playerColor == 1) ? 100000.0f : -100000.0f;
+        //std::cout << "[TERMINAL] White wins!" << std::endl;
+        float value = (playerColor == 1) ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
         return {value, ""};
     } else if (state == BoardState::BlackWins) {
-        float value = (playerColor == -1) ? 100000.0f : -100000.0f;
+        //std::cout << "[TERMINAL] Black wins!" << std::endl;
+        float value = (playerColor == -1) ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
         return {value, ""};
     } else if (state == BoardState::Draw) {
         return {0.0f, ""};
@@ -664,47 +619,51 @@ std::pair<float, std::string> MinMaxLocklessLazySMP::locklessNegamax(
     for (const auto& entry : movelist) {
         if (shouldStop()) break;
         
-        if (board.TryPlayMove(entry.m, entry.str)) {
-            moveCount++;
-            
-            // Late Move Reduction (LMR)
-            int reduction = 0;
-            if (moveCount > 4 && depth > 3) {
-                reduction = 1;  // Search later moves shallower
-            }
-            
-            auto [childScore, _] = locklessNegamax(
-                td, board, -playerColor, -beta, -alpha, depth - 1 - reduction
-            );
-            float score = -childScore;
-            
-            // Re-search if LMR found something good
-            if (reduction > 0 && score > alpha) {
-                std::tie(childScore, _) = locklessNegamax(
-                    td, board, -playerColor, -beta, -alpha, depth - 1
-                );
-                score = -childScore;
-            }
-            
-            board.TryUndoLastMove();
-            
-            if (score > value) {
-                value = score;
-                bestMove = entry.str;
-            }
-            
-            alpha = std::max(alpha, value);
-            
-            // Beta cutoff - THIS IS CRITICAL!
-            if (alpha >= beta) {
-                td.beta_cutoffs.fetch_add(1, std::memory_order_relaxed);  // COUNT IT!
-                
-                // Killer move heuristic: remember good cutoff moves
-                // (You could store this move as a "killer" for this depth)
-                
-                break;  // PRUNE!
-            }
+        // if (board.TryPlayMove(entry.m, entry.str)) {
+        board.FastPlay(entry.m, entry.str);
+        moveCount++;
+        
+        // Late Move Reduction (LMR)
+        int reduction = 0;
+        if (moveCount > 4 && depth > 3) {
+            reduction = 1;  // Search later moves shallower
         }
+        
+        auto [childScore, _] = locklessNegamax(
+            td, board, -playerColor, -beta, -alpha, depth - 1 - reduction
+        );
+        float score = -childScore;
+        
+        // Re-search if LMR found something good
+        if (reduction > 0 && score > alpha) {
+            std::tie(childScore, _) = locklessNegamax(
+                td, board, -playerColor, -beta, -alpha, depth - 1
+            );
+            score = -childScore;
+        }
+        
+        if (!board.TryUndoLastMove())
+        {
+            // std::cout << "PORCODIO" << std::endl;
+        }
+        
+        if (score > value) {
+            value = score;
+            bestMove = entry.str;
+        }
+        
+        alpha = std::max(alpha, value);
+        
+        // Beta cutoff - THIS IS CRITICAL!
+        if (alpha >= beta) {
+            td.beta_cutoffs.fetch_add(1, std::memory_order_relaxed);  // COUNT IT!
+            
+            // Killer move heuristic: remember good cutoff moves
+            // (You could store this move as a "killer" for this depth)
+            
+            break;  // PRUNE!
+        }
+        
     }
     
     // Store in TT

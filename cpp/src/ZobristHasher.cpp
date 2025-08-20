@@ -4,35 +4,30 @@
 
 namespace MzingaCpp {
 
-// Generatore di numeri casuali per valori Zobrist
-std::mt19937_64 rng(123456789);
-std::uniform_int_distribution<uint64_t> dist;
-
-ZobristHasher::ZobristHasher() {}
-
-// Funzione per ottenere o generare un valore Zobrist per una coppia (pezzo, posizione)
-uint64_t ZobristHasher::getOrGenerateHash(PieceName piece, Position pos) {
-    auto key = std::make_pair(piece, pos);
-    if (zobristTable.find(key) == zobristTable.end()) {
-        zobristTable[key] = dist(rng);
-    }
-    return zobristTable[key];
-}
-
 // Calcola l'hash iniziale della board
 uint64_t ZobristHasher::computeHash(Board& board) {
-    uint64_t hash = 0;
+    uint64_t h = 0;
     for (const auto& [piece, pos] : board.GetPiecesAndPositions()) {
-        hash ^= getOrGenerateHash(piece, pos);
+        h ^= zobristValue(piece, pos);
     }
-    return hash;
+    // opzionale: side-to-move, stati speciali, ecc.
+    return h;
+}
+
+inline uint64_t ZobristHasher::zobristValue(PieceName p, const Position& pos) noexcept {
+    // combino pezzo e coordinate con un paio di mix
+    uint64_t x = ZobristHasher::SEED ^ static_cast<uint64_t>(static_cast<int>(p));
+    x = splitmix64(x ^ zz(pos.Q));
+    x = splitmix64(x ^ zz(pos.R));
+    x = splitmix64(x ^ static_cast<uint64_t>(pos.Stack));
+    return x;
 }
 
 // Aggiorna l'hash quando un pezzo si muove
-uint64_t ZobristHasher::updateHash(uint64_t currentHash, PieceName piece, Position oldPos, Position newPos) {
-    currentHash ^= getOrGenerateHash(piece, oldPos);  // Rimuove il pezzo dalla vecchia posizione
-    currentHash ^= getOrGenerateHash(piece, newPos);  // Aggiunge il pezzo alla nuova posizione
-    return currentHash;
+uint64_t ZobristHasher::updateHash(uint64_t h, PieceName piece, Position oldPos, Position newPos) const {
+    h ^= zobristValue(piece, oldPos);
+    h ^= zobristValue(piece, newPos);
+    return h;
 }
 
 } // namespace MzingaCpp

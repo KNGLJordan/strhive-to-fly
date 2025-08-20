@@ -59,8 +59,11 @@ def play_step(p1: subprocess.Popen, p2: subprocess.Popen) -> str:
         move = send(p1, f"bestmove time {TIME_H:02}:{TIME_M:02}:{TIME_S:02}")
     move = move.strip().split("\n")[0]
     print(f"[Player] plays: {move}", flush=True)
-    send(p1, f"play {move}")
-    return send(p2, f"play {move}")
+    o1 = send(p1, f"play {move}")
+    # print(f"[{p1.args[-1].split("/")[-1]}]\t response: {o1.strip()}", flush=True)
+    o2 = send(p2, f"play {move}")
+    # print(f"[{p2.args[-1].split("/")[-1]}]\t response: {o2.strip()}", flush=True)
+    return o2
 
 def check_end_game(out: str) -> bool:
     return "InProgress" != out.split(";")[1]
