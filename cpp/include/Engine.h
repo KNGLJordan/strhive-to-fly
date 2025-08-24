@@ -52,6 +52,7 @@ class Engine
 
     std::function<void(std::string)> m_writeLine;
     bool m_exitRequested = false;
+    bool m_useLazySMP = false;
 
     std::shared_ptr<Board> m_board = nullptr;
 };

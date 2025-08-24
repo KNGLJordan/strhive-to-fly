@@ -214,26 +214,31 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
     
     search_active.store(false, std::memory_order_relaxed);
     search_mode.store(SearchMode::NONE, std::memory_order_relaxed);
+
+    // -------------------------------------------------- STRAT 1 --------------------------------------------------
     
     // Collect best result from all threads
-    float best_score = -std::numeric_limits<float>::infinity();
-    std::string best_move;
-    int best_thread = -1;
-    int best_depth = 0;
+    // float best_score = -std::numeric_limits<float>::infinity();
+    // std::string best_move;
+    // int best_thread = -1;
+    // int best_depth = 0;
     
-    for (int t = 0; t < num_threads; ++t) {
-        float score = thread_data[t]->best_score.load(std::memory_order_relaxed);
-        int depth = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+    // for (int t = 0; t < num_threads; ++t) {
+    //     float score = thread_data[t]->best_score.load(std::memory_order_relaxed);
+    //     int depth = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
         
-        // Prefer deeper searches with good scores
-        if (depth > best_depth || (depth == best_depth && score > best_score)) {
-            best_score = score;
-            best_move = thread_data[t]->getBestMove();
-            best_thread = t;
-            best_depth = depth;
-        }
-    }
-    return best_move;
+    //     // Prefer deeper searches with good scores
+    //     if (depth > best_depth || (depth == best_depth && score > best_score)) {
+    //         best_score = score;
+    //         best_move = thread_data[t]->getBestMove();
+    //         best_thread = t;
+    //         best_depth = depth;
+    //     }
+    // }
+    // return best_move;
+
+    // -------------------------------------------------- STRAT 2 --------------------------------------------------
+
     // float best_score = -std::numeric_limits<float>::infinity();
     // int   best_depth = -1;
     // std::string best_move;
@@ -248,6 +253,10 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
     //         best_score = s; best_depth = d; best_move = thread_data[t]->getBestMove();
     //     }
     // }
+    // return best_move;
+
+    // -------------------------------------------------- DEBUG --------------------------------------------------
+
 
     // #ifdef DEBUG_LAZY_SMP
     // std::cout << "\n=== Lazy SMP Search Complete ===\n";
@@ -269,70 +278,72 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
     // std::cout << "\n";
     // #endif
 
+    // -------------------------------------------------- STRAT 3 --------------------------------------------------
 
-    // const float MATE_BOUND = 9999.0f;             // tua convenzione
-    // const float IMPROVE_MARGIN = 20.0f;           // opzionale stabilità
 
-    // int main_id = 0;
-    // float main_score = thread_data[main_id]->best_score.load(std::memory_order_relaxed);
-    // int   main_depth = thread_data[main_id]->completed_depth.load(std::memory_order_relaxed);
-    // std::string main_move = thread_data[main_id]->getBestMove();
 
-    // //1) se qualunque thread ha una vittoria, prendi quella
-    // int best_win_tid = -1;
-    // float best_win_score = -std::numeric_limits<float>::infinity();
-    // for (int t = 0; t < num_threads; ++t) {
-    //     float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
-    //     if (s >= MATE_BOUND && s > best_win_score) {
-    //         best_win_score = s;
-    //         best_win_tid = t;
-    //     }
+    const float MATE_BOUND = 9999.0f;             // tua convenzione
+    const float IMPROVE_MARGIN = 20.0f;           // opzionale stabilità
+
+    int main_id = 0;
+    float main_score = thread_data[main_id]->best_score.load(std::memory_order_relaxed);
+    int   main_depth = thread_data[main_id]->completed_depth.load(std::memory_order_relaxed);
+    std::string main_move = thread_data[main_id]->getBestMove();
+
+    //1) se qualunque thread ha una vittoria, prendi quella
+    int best_win_tid = -1;
+    float best_win_score = -std::numeric_limits<float>::infinity();
+    for (int t = 0; t < num_threads; ++t) {
+        float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+        if (s >= MATE_BOUND && s > best_win_score) {
+            best_win_score = s;
+            best_win_tid = t;
+        }
+    }
+    if (best_win_tid != -1) {
+        // std::cout << "[1] Found winning move in thread " << best_win_tid << ": "
+        //           << thread_data[best_win_tid]->getBestMove() << " (score: "
+        //           << best_win_score << ")\n";
+        return thread_data[best_win_tid]->getBestMove();
+    }
+
+    // 2) se il main ha una mossa valida, di default usiamo quella
+    if (!main_move.empty()) {
+        // opzionale: se un helper è chiaramente migliore allo stesso/≥ depth, prendi lui
+        int pick = main_id;
+        for (int t = 1; t < num_threads; ++t) {
+            float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+            int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+            if (!thread_data[t]->getBestMove().empty()) {
+                bool clearly_better = (s > main_score + IMPROVE_MARGIN) && (d >= main_depth);
+                if (clearly_better) { pick = t; main_score = s; main_depth = d; }
+            }
+        }
+        // std::cout << "[2] Main thread best move: " << main_move 
+        //           << " (score: " << main_score << ", depth: " << main_depth << ")\n";
+        return thread_data[pick]->getBestMove();
+    }
+
+    // 3) fallback: il main non ha ancora scritto nulla → scegli il migliore globale
+    float best_s = -std::numeric_limits<float>::infinity();
+    int best_t = -1;
+    int best_d = -1;
+    for (int t = 0; t < num_threads; ++t) {
+        float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
+        int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
+        if (!thread_data[t]->getBestMove().empty() &&
+            (s > best_s || (s == best_s && d > best_d))) {
+            best_s = s; best_d = d; best_t = t;
+        }
+    }
+    // if (best_t != -1) {
+    //     std::cout << "[3] Best move from any thread: " << thread_data[best_t]->getBestMove() 
+    //               << " (score: " << best_s << ", depth: " << best_d << ")\n";
+    // } else {
+    //     std::cout << "[3] No valid moves found in any thread.\n";
     // }
-    // if (best_win_tid != -1) {
-    //     // std::cout << "[1] Found winning move in thread " << best_win_tid << ": "
-    //     //           << thread_data[best_win_tid]->getBestMove() << " (score: "
-    //     //           << best_win_score << ")\n";
-    //     return thread_data[best_win_tid]->getBestMove();
-    // }
-
-    // // 2) se il main ha una mossa valida, di default usiamo quella
-    // if (!main_move.empty()) {
-    //     // opzionale: se un helper è chiaramente migliore allo stesso/≥ depth, prendi lui
-    //     int pick = main_id;
-    //     for (int t = 1; t < num_threads; ++t) {
-    //         float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
-    //         int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
-    //         if (!thread_data[t]->getBestMove().empty()) {
-    //             bool clearly_better = (s > main_score + IMPROVE_MARGIN) && (d >= main_depth);
-    //             if (clearly_better) { pick = t; main_score = s; main_depth = d; }
-    //         }
-    //     }
-    //     // std::cout << "[2] Main thread best move: " << main_move 
-    //     //           << " (score: " << main_score << ", depth: " << main_depth << ")\n";
-    //     return thread_data[pick]->getBestMove();
-    // }
-
-    // // 3) fallback: il main non ha ancora scritto nulla → scegli il migliore globale
-    // float best_s = -std::numeric_limits<float>::infinity();
-    // int best_t = -1;
-    // int best_d = -1;
-    // for (int t = 0; t < num_threads; ++t) {
-    //     float s = thread_data[t]->best_score.load(std::memory_order_relaxed);
-    //     int   d = thread_data[t]->completed_depth.load(std::memory_order_relaxed);
-    //     if (!thread_data[t]->getBestMove().empty() &&
-    //         (s > best_s || (s == best_s && d > best_d))) {
-    //         best_s = s; best_d = d; best_t = t;
-    //     }
-    // }
-    // // if (best_t != -1) {
-    // //     std::cout << "[3] Best move from any thread: " << thread_data[best_t]->getBestMove() 
-    // //               << " (score: " << best_s << ", depth: " << best_d << ")\n";
-    // // } else {
-    // //     std::cout << "[3] No valid moves found in any thread.\n";
-    // // }
-    // return (best_t != -1) ? thread_data[best_t]->getBestMove() : std::string{};
+    return (best_t != -1) ? thread_data[best_t]->getBestMove() : std::string{};
     
-    // return best_move;
 
 }
 

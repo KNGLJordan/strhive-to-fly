@@ -97,6 +97,8 @@ class Board
     int CountNeighbors(PieceName pieceName, int& friendlyCount, int& enemyCount);
     std::vector<std::pair<Position, PieceName>> GetPiecesInPlay();
 
+    PieceName m_lastPieceMoved = PieceName::INVALID;
+    
   private:
     // Articulation points (cut vertices) cache
     mutable bool m_articulationPositionsReady = false;
@@ -159,7 +161,6 @@ class Board
     Color m_currentColor = Color::White;
     int m_currentTurn = 0;
 
-    PieceName m_lastPieceMoved = PieceName::INVALID;
 
     Position m_piecePositions[(int)PieceName::NumPieceNames];
     PieceName m_pieceGrid[BoardSize][BoardSize][BoardStackSize];

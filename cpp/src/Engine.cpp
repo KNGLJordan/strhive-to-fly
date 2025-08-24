@@ -13,7 +13,7 @@ using namespace MzingaCpp;
 
 Engine::Engine(std::function<void(std::string)> writeLine) : 
     m_writeLine{writeLine}, 
-    // minmaxZobrist(false),
+    minmaxZobrist(false),
     lazysmp(false)
 
 
@@ -30,6 +30,7 @@ Engine::Engine(std::function<void(std::string)> writeLine) :
     // customWeights.k_pieces_in_play = 1.0f;
     // minmaxZobrist(customWeights, true)
 {
+    m_useLazySMP = false;
 }
 
 void Engine::Start()
@@ -312,7 +313,10 @@ void Engine::BestMove(std::string args)
     if (keyword == "depth") {
         int depth;
         if (ss >> depth) { // Converte il valore in intero
-            bestMoveStr = lazysmp.calculateBestMove(*m_board, depth, 0);  // Usa l'oggetto persistente
+            if (!m_useLazySMP)
+                bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, depth, 0);
+            else
+                bestMoveStr = lazysmp.calculateBestMove(*m_board, depth, 0);
         }
     } 
     else if (keyword == "time") {
@@ -325,7 +329,10 @@ void Engine::BestMove(std::string args)
         
         if (timeSS >> h >> colon1 >> m >> colon2 >> s && colon1 == ':' && colon2 == ':') {
             int totalSeconds = h * 3600 + m * 60 + s;
-            bestMoveStr = lazysmp.calculateBestMove(*m_board, 0, totalSeconds);  // Usa l'oggetto persistente
+            if (!m_useLazySMP)
+                bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, 0, totalSeconds);
+            else
+                bestMoveStr = lazysmp.calculateBestMove(*m_board, 0, totalSeconds);
         }
     }
 

@@ -30,6 +30,8 @@ public:
 private:
     static constexpr uint64_t SEED = 0x123456789ABCDEF0ull;
 
+    static constexpr uint64_t TOGGLE_TURN = 2658527535540318469ull; 
+    
     static inline uint64_t zobristValue(PieceName p, const Position& pos) noexcept;
 };
 

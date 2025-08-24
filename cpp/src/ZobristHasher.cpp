@@ -10,7 +10,12 @@ uint64_t ZobristHasher::computeHash(Board& board) {
     for (const auto& [piece, pos] : board.GetPiecesAndPositions()) {
         h ^= zobristValue(piece, pos);
     }
-    // opzionale: side-to-move, stati speciali, ecc.
+    if (board.GetCurrentTurn() % 2 == 0) {
+        h ^= TOGGLE_TURN; // cambia il turno
+    }
+    auto lastPiece_Moved = board.m_lastPieceMoved;
+    // if there is a pillbug and the lastpiece moved is near the pillbub, we add the info about the last piece moved
+    h = splitmix64(h ^ zz(static_cast<int>(lastPiece_Moved)));
     return h;
 }
 
