@@ -30,7 +30,7 @@ Engine::Engine(std::function<void(std::string)> writeLine) :
     // customWeights.k_pieces_in_play = 1.0f;
     // minmaxZobrist(customWeights, true)
 {
-    m_useLazySMP = false;
+    m_useLazySMP = true;
 }
 
 void Engine::Start()
@@ -333,6 +333,24 @@ void Engine::BestMove(std::string args)
                 bestMoveStr = minmaxZobrist.calculateBestMove(*m_board, 0, totalSeconds);
             else
                 bestMoveStr = lazysmp.calculateBestMove(*m_board, 0, totalSeconds);
+        }
+    }
+
+    if (bestMoveStr.empty())
+    {
+        auto validMoves = m_board->GetValidMoves();
+
+        Move bestMove = *(validMoves->begin());
+
+        std::string result;
+        if (m_board->TryGetMoveString(bestMove, result))
+        {
+            WriteLine(result);
+            WriteLine(OkString);
+        }
+        else
+        {
+            WriteError();
         }
     }
 
