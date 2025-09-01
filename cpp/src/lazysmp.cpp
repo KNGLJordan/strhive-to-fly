@@ -195,7 +195,7 @@ std::string MinMaxLocklessLazySMP::searchLockless(int maxDepth, int timeLimit) {
         // TIME-LIMITED SEARCH: Use iterative deepening
         search_mode.store(SearchMode::TIME_LIMITED, std::memory_order_relaxed);
         search_start_time.store(getTimeMs(), std::memory_order_relaxed);
-        time_limit_ms.store(timeLimit * 1000, std::memory_order_relaxed);
+        time_limit_ms.store(timeLimit * 1000 - 5, std::memory_order_relaxed);
         target_depth.store(MAX_SEARCH_DEPTH, std::memory_order_relaxed);  // No depth limit
     } else {
         // DEPTH-LIMITED SEARCH: Search to exact depth

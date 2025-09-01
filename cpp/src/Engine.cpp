@@ -352,10 +352,12 @@ void Engine::BestMove(std::string args)
         {
             WriteError();
         }
+        // WriteLine("puppa");
     }
-
-    WriteLine(bestMoveStr);
-    WriteLine(OkString);
+    else {   
+        WriteLine(bestMoveStr);
+        WriteLine(OkString);
+    }
     //---------------------------------------------------------------------------------------------------------------------------------
 }
 
